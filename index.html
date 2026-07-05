@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TruckMitra — Heavy Vehicle Service Aggregator | Mechanical, Tyre, Battery &amp; Breakdown</title>
+  <meta name="description" content="India's trusted heavy vehicle service aggregator. Book mechanical repairs, tyre services, battery replacement and 24x7 breakdown support for trucks, buses, trailers and LCVs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ======= TOP BAR ======= -->
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>🛞 24x7 Breakdown Helpline: <a href="tel:+919999900000"><strong>+91 99999 00000</strong></a></span>
+      <span class="topbar-cities">Serving: Delhi NCR · Mumbai · Chennai · Bengaluru · Hyderabad · Pune · Kolkata</span>
+    </div>
+  </div>
+
+  <!-- ======= NAVBAR ======= -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="logo">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8h12v8H1z"/><path d="M13 10h4l3 3v3h-7"/><circle cx="5.5" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>
+        <span>Truck<em>Mitra</em></span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#services">Services</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#vehicles">Vehicles</a>
+        <a href="#fleet">Fleet &amp; AMC</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#faq">FAQ</a>
+        <a href="partner.html" class="nav-partner">Become a Partner</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="tel:+919999900000" class="btn btn-outline btn-sm">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call Us
+        </a>
+        <button class="btn btn-primary btn-sm" onclick="openBooking()">Book Service</button>
+        <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======= HERO ======= -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <span class="badge">🚛 India's #1 Heavy Vehicle Service Network</span>
+        <h1>Truck &amp; Bus Repairs, <span class="accent">Sorted.</span></h1>
+        <p>Book verified heavy-vehicle workshops and doorstep mechanics for mechanical work, tyres, batteries and 24x7 breakdown support — with upfront pricing and genuine parts.</p>
+        <ul class="hero-points">
+          <li>✅ 500+ Verified Workshops</li>
+          <li>✅ Upfront Transparent Pricing</li>
+          <li>✅ 6-Month Service Warranty</li>
+          <li>✅ 90-Min Breakdown Response</li>
+        </ul>
+        <div class="hero-stats">
+          <div><strong>50,000+</strong><span>Vehicles Serviced</span></div>
+          <div><strong>500+</strong><span>Partner Workshops</span></div>
+          <div><strong>25+</strong><span>Cities</span></div>
+          <div><strong>4.7★</strong><span>Avg. Rating</span></div>
+        </div>
+      </div>
+
+      <!-- Quick booking card -->
+      <div class="booking-card" id="quickBook">
+        <h3>Get Instant Quote</h3>
+        <p class="muted">Free pickup &amp; inspection at select workshops</p>
+        <form id="quickForm" novalidate>
+          <label>Vehicle Type
+            <select name="vehicle" required>
+              <option value="">Select vehicle type</option>
+              <option>Truck / Lorry (HCV)</option>
+              <option>Light Commercial Vehicle (LCV)</option>
+              <option>Bus / Coach</option>
+              <option>Trailer / Container</option>
+              <option>Tipper / Dumper</option>
+              <option>Tanker</option>
+              <option>Construction Equipment</option>
+            </select>
+          </label>
+          <label>Service Needed
+            <select name="service" id="quickService" required>
+              <option value="">Select a service</option>
+              <option>Mechanical Repair</option>
+              <option>Tyre Service / Replacement</option>
+              <option>Battery Service / Replacement</option>
+              <option>Brake &amp; Clutch</option>
+              <option>Suspension &amp; Axle</option>
+              <option>Electrical &amp; Wiring</option>
+              <option>Denting, Painting &amp; Body Work</option>
+              <option>Preventive Maintenance / PMS</option>
+              <option>24x7 Breakdown Assistance</option>
+            </select>
+          </label>
+          <label>City
+            <select name="city" required>
+              <option value="">Select city</option>
+              <option>Delhi NCR</option><option>Mumbai</option><option>Chennai</option>
+              <option>Bengaluru</option><option>Hyderabad</option><option>Pune</option>
+              <option>Kolkata</option><option>Ahmedabad</option><option>Other</option>
+            </select>
+          </label>
+          <label>Mobile Number
+            <input type="tel" name="phone" placeholder="10-digit mobile number" maxlength="10" pattern="[6-9][0-9]{9}" required />
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">Check Price — It's Free</button>
+          <p class="form-note">By continuing you agree to our Terms. We'll call you within 15 minutes.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= SERVICES ======= -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head">
+        <h2>Our Services</h2>
+        <p>Everything your fleet needs — from scheduled maintenance to midnight breakdowns.</p>
+      </div>
+      <div class="services-grid">
+        <article class="service-card" data-service="Mechanical Repair">
+          <div class="service-icon">🔧</div>
+          <h3>Mechanical Repairs</h3>
+          <p>Engine overhaul, gearbox, differential, clutch plate, turbocharger and fuel-pump repairs by heavy-vehicle specialists.</p>
+          <span class="price-tag">Starting ₹1,499</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card" data-service="Tyre Service / Replacement">
+          <div class="service-icon">🛞</div>
+          <h3>Tyre Services</h3>
+          <p>New tyres (MRF, Apollo, JK, CEAT), retreading, wheel alignment, balancing and on-road puncture assistance.</p>
+          <span class="price-tag">Starting ₹499</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card" data-service="Battery Service / Replacement">
+          <div class="service-icon">🔋</div>
+          <h3>Battery Services</h3>
+          <p>Doorstep battery testing, jump-start, charging and replacement — Exide, Amaron &amp; Tata Green with warranty.</p>
+          <span class="price-tag">Starting ₹399</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card" data-service="Brake & Clutch">
+          <div class="service-icon">🛑</div>
+          <h3>Brake &amp; Clutch</h3>
+          <p>Air-brake servicing, brake liner &amp; drum replacement, clutch overhaul and pedal-free-play adjustment.</p>
+          <span class="price-tag">Starting ₹999</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card" data-service="Suspension & Axle">
+          <div class="service-icon">🪛</div>
+          <h3>Suspension &amp; Axle</h3>
+          <p>Leaf-spring replacement, U-bolt tightening, axle repair, kingpin and bush replacement for a stable ride.</p>
+          <span class="price-tag">Starting ₹1,299</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card" data-service="Electrical & Wiring">
+          <div class="service-icon">⚡</div>
+          <h3>Electrical &amp; Wiring</h3>
+          <p>Self-starter, alternator, complete wiring harness, lights and dashboard electrical diagnostics.</p>
+          <span class="price-tag">Starting ₹599</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card" data-service="Denting, Painting & Body Work">
+          <div class="service-icon">🎨</div>
+          <h3>Body, Denting &amp; Painting</h3>
+          <p>Cabin repair, load-body fabrication, full-body painting and branding/livery for fleets.</p>
+          <span class="price-tag">Custom Quote</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card" data-service="Preventive Maintenance / PMS">
+          <div class="service-icon">🗓️</div>
+          <h3>Preventive Maintenance</h3>
+          <p>Scheduled PMS packages — oil &amp; filters, greasing, coolant, 40-point inspection with digital report.</p>
+          <span class="price-tag">Starting ₹2,999</span>
+          <button class="link-btn">Book Now →</button>
+        </article>
+        <article class="service-card highlight" data-service="24x7 Breakdown Assistance">
+          <div class="service-icon">🚨</div>
+          <h3>24x7 Breakdown</h3>
+          <p>Stranded on the highway? On-road repair, towing and fuel-delivery support across 25+ cities and major highways.</p>
+          <span class="price-tag">Response &lt; 90 min</span>
+          <button class="link-btn">Get Help Now →</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= HOW IT WORKS ======= -->
+  <section class="section alt" id="how-it-works">
+    <div class="container">
+      <div class="section-head">
+        <h2>How TruckMitra Works</h2>
+        <p>From quote to delivery in four simple steps.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Tell Us the Problem</h3>
+          <p>Select your vehicle and service online, or call our helpline. Get an instant estimated price.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Get Matched</h3>
+          <p>We assign the best-rated nearby workshop or send a doorstep mechanic to your location.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Approve &amp; Track</h3>
+          <p>Approve the final quote before work starts. Track job progress with photos and updates on WhatsApp.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>Pay &amp; Roll</h3>
+          <p>Pay only after quality check. GST invoice, genuine-part bills and up to 6-month warranty included.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= VEHICLES ======= -->
+  <section class="section" id="vehicles">
+    <div class="container">
+      <div class="section-head">
+        <h2>Vehicles We Service</h2>
+        <p>All major brands — Tata, Ashok Leyland, BharatBenz, Eicher, Mahindra, Volvo, Scania &amp; more.</p>
+      </div>
+      <div class="vehicle-grid">
+        <div class="vehicle-chip">🚛 Trucks &amp; Lorries</div>
+        <div class="vehicle-chip">🚌 Buses &amp; Coaches</div>
+        <div class="vehicle-chip">🚚 LCVs &amp; Pickups</div>
+        <div class="vehicle-chip">🛻 Tippers &amp; Dumpers</div>
+        <div class="vehicle-chip">🛢️ Tankers</div>
+        <div class="vehicle-chip">📦 Trailers &amp; Containers</div>
+        <div class="vehicle-chip">🚜 Construction Equipment</div>
+        <div class="vehicle-chip">❄️ Reefer Vehicles</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= FLEET / AMC ======= -->
+  <section class="section alt" id="fleet">
+    <div class="container">
+      <div class="section-head">
+        <h2>Fleet &amp; AMC Plans</h2>
+        <p>Running 5+ vehicles? Put your entire fleet's maintenance on autopilot.</p>
+      </div>
+      <div class="plans">
+        <div class="plan">
+          <h3>Starter</h3>
+          <div class="plan-price">₹1,999<span>/vehicle/month</span></div>
+          <ul>
+            <li>✅ Quarterly PMS service</li>
+            <li>✅ Priority workshop slots</li>
+            <li>✅ Breakdown support (chargeable)</li>
+            <li>✅ Digital service history</li>
+            <li>➖ Dedicated account manager</li>
+          </ul>
+          <button class="btn btn-outline btn-block" onclick="openBooking('Fleet — Starter Plan')">Enquire Now</button>
+        </div>
+        <div class="plan featured">
+          <div class="plan-flag">Most Popular</div>
+          <h3>Fleet Pro</h3>
+          <div class="plan-price">₹3,499<span>/vehicle/month</span></div>
+          <ul>
+            <li>✅ Monthly PMS + 40-point inspection</li>
+            <li>✅ Free doorstep battery &amp; tyre checks</li>
+            <li>✅ 4 free breakdown call-outs/year</li>
+            <li>✅ Fleet dashboard &amp; reports</li>
+            <li>✅ Dedicated account manager</li>
+          </ul>
+          <button class="btn btn-primary btn-block" onclick="openBooking('Fleet — Pro Plan')">Enquire Now</button>
+        </div>
+        <div class="plan">
+          <h3>Enterprise</h3>
+          <div class="plan-price">Custom<span>pricing</span></div>
+          <ul>
+            <li>✅ Everything in Fleet Pro</li>
+            <li>✅ On-site resident mechanics</li>
+            <li>✅ Unlimited breakdown support</li>
+            <li>✅ Spare-parts credit line</li>
+            <li>✅ SLA-backed uptime guarantee</li>
+          </ul>
+          <button class="btn btn-outline btn-block" onclick="openBooking('Fleet — Enterprise Plan')">Talk to Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= WHY US ======= -->
+  <section class="section" id="why-us">
+    <div class="container">
+      <div class="section-head">
+        <h2>Why Fleet Owners Trust Us</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-item"><span>🛡️</span><h3>Genuine Parts</h3><p>OEM &amp; OES parts with bills — no fakes, ever.</p></div>
+        <div class="why-item"><span>💰</span><h3>Upfront Pricing</h3><p>Approve the quote before a single bolt is touched.</p></div>
+        <div class="why-item"><span>🧾</span><h3>GST Invoicing</h3><p>Proper invoices for every job — input credit friendly.</p></div>
+        <div class="why-item"><span>⏱️</span><h3>Less Downtime</h3><p>Faster turnaround means your vehicle earns, not waits.</p></div>
+        <div class="why-item"><span>👨‍🔧</span><h3>Trained Mechanics</h3><p>HCV-certified technicians, background verified.</p></div>
+        <div class="why-item"><span>📱</span><h3>Live Job Tracking</h3><p>Photo updates and status on WhatsApp at every stage.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= TESTIMONIALS ======= -->
+  <section class="section alt" id="reviews">
+    <div class="container">
+      <div class="section-head">
+        <h2>What Our Customers Say</h2>
+      </div>
+      <div class="testimonials">
+        <blockquote class="testimonial">
+          <div class="stars">★★★★★</div>
+          <p>"My truck broke down near Panipat at 2 AM. TruckMitra's mechanic reached in under an hour and got the fuel pump sorted on the spot. Lifesaver for transporters."</p>
+          <footer><strong>Rajinder Singh</strong><span>Owner, 12-truck fleet · Delhi NCR</span></footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <div class="stars">★★★★★</div>
+          <p>"We moved our 40-bus fleet to their Fleet Pro AMC. Breakdowns dropped by half and the monthly reports make audits painless."</p>
+          <footer><strong>Meena Krishnan</strong><span>Operations Head, Chennai Travels</span></footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <div class="stars">★★★★☆</div>
+          <p>"Tyre replacement for my tipper cost 15% less than the local market, with proper billing. Alignment was included. Very professional."</p>
+          <footer><strong>Amol Pawar</strong><span>Construction Contractor · Pune</span></footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= FAQ ======= -->
+  <section class="section" id="faq">
+    <div class="container narrow">
+      <div class="section-head">
+        <h2>Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>How does TruckMitra pricing work?</summary>
+          <p>You get an estimated price instantly when you book. After physical inspection, the workshop shares a final itemised quote — work starts only after your approval. No hidden charges.</p>
+        </details>
+        <details>
+          <summary>Do you provide doorstep service?</summary>
+          <p>Yes. Battery replacement, tyre puncture, minor electrical work and inspections are done at your doorstep or roadside. Major mechanical jobs are done at partner workshops, with pickup assistance available.</p>
+        </details>
+        <details>
+          <summary>What warranty do I get?</summary>
+          <p>Up to 6 months / 20,000 km warranty on service labour, plus the manufacturer's warranty on all parts (batteries and tyres carry their brand warranty).</p>
+        </details>
+        <details>
+          <summary>How fast is breakdown assistance?</summary>
+          <p>Inside city limits we target under 90 minutes. On major highways (NH-44, NH-48, Golden Quadrilateral corridors) our partner network covers most stretches within 2 hours.</p>
+        </details>
+        <details>
+          <summary>Can I get GST invoices for my company?</summary>
+          <p>Absolutely. Every job comes with a proper GST invoice against your GSTIN, and fleet customers get consolidated monthly statements.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= CTA STRIP ======= -->
+  <section class="cta-strip">
+    <div class="container cta-inner">
+      <div>
+        <h2>Vehicle down? Revenue down.</h2>
+        <p>Get it back on the road today — book in 30 seconds.</p>
+      </div>
+      <div class="cta-actions">
+        <button class="btn btn-light" onclick="openBooking()">Book a Service</button>
+        <a href="tel:+919999900000" class="btn btn-ghost">📞 +91 99999 00000</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= FOOTER ======= -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="#" class="logo footer-logo">
+          <span>Truck<em>Mitra</em></span>
+        </a>
+        <p>India's trusted heavy vehicle service aggregator. Mechanical, tyre, battery and breakdown services for trucks, buses and commercial fleets.</p>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <a href="#services">Mechanical Repairs</a>
+        <a href="#services">Tyre Services</a>
+        <a href="#services">Battery Services</a>
+        <a href="#services">Breakdown Assistance</a>
+        <a href="#fleet">Fleet AMC Plans</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#faq">FAQ</a>
+        <a href="partner.html">Partner With Us</a>
+        <a href="#">Careers</a>
+      </div>
+      <div>
+        <h4>Cities</h4>
+        <a href="#">Delhi NCR</a>
+        <a href="#">Mumbai</a>
+        <a href="#">Chennai</a>
+        <a href="#">Bengaluru</a>
+        <a href="#">Hyderabad</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="tel:+919999900000">📞 +91 99999 00000</a>
+        <a href="mailto:care@truckmitra.in">✉️ care@truckmitra.in</a>
+        <p class="muted">Mon–Sun, 24x7 support</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <span>© 2026 TruckMitra. All rights reserved.</span>
+        <span>Terms · Privacy · Refund Policy</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======= BOOKING MODAL ======= -->
+  <div class="modal-overlay" id="bookingModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" onclick="closeBooking()" aria-label="Close">✕</button>
+      <div id="modalFormView">
+        <h3 id="modalTitle">Book Your Service</h3>
+        <p class="muted">Fill this in and we'll call you back within 15 minutes.</p>
+        <form id="bookingForm" novalidate>
+          <label>Your Name
+            <input type="text" name="name" placeholder="Full name" required />
+          </label>
+          <div class="form-row">
+            <label>Mobile Number
+              <input type="tel" name="phone" placeholder="10-digit number" maxlength="10" pattern="[6-9][0-9]{9}" required />
+            </label>
+            <label>City
+              <select name="city" required>
+                <option value="">Select city</option>
+                <option>Delhi NCR</option><option>Mumbai</option><option>Chennai</option>
+                <option>Bengaluru</option><option>Hyderabad</option><option>Pune</option>
+                <option>Kolkata</option><option>Ahmedabad</option><option>Other</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Vehicle Type
+              <select name="vehicle" required>
+                <option value="">Select vehicle</option>
+                <option>Truck / Lorry (HCV)</option>
+                <option>Light Commercial Vehicle (LCV)</option>
+                <option>Bus / Coach</option>
+                <option>Trailer / Container</option>
+                <option>Tipper / Dumper</option>
+                <option>Tanker</option>
+                <option>Construction Equipment</option>
+              </select>
+            </label>
+            <label>Service Needed
+              <select name="service" id="modalService" required>
+                <option value="">Select service</option>
+                <option>Mechanical Repair</option>
+                <option>Tyre Service / Replacement</option>
+                <option>Battery Service / Replacement</option>
+                <option>Brake &amp; Clutch</option>
+                <option>Suspension &amp; Axle</option>
+                <option>Electrical &amp; Wiring</option>
+                <option>Denting, Painting &amp; Body Work</option>
+                <option>Preventive Maintenance / PMS</option>
+                <option>24x7 Breakdown Assistance</option>
+                <option>Fleet — Starter Plan</option>
+                <option>Fleet — Pro Plan</option>
+                <option>Fleet — Enterprise Plan</option>
+                <option>Partner Workshop Enquiry</option>
+              </select>
+            </label>
+          </div>
+          <label>Describe the Issue (optional)
+            <textarea name="issue" rows="3" placeholder="e.g. Engine overheating, brake noise, need 2 new rear tyres..."></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">Confirm Booking Request</button>
+        </form>
+      </div>
+      <div id="modalSuccessView" hidden>
+        <div class="success-icon">✅</div>
+        <h3>Request Received!</h3>
+        <p>Thanks, <strong id="successName"></strong>. Our service advisor will call <strong id="successPhone"></strong> within 15 minutes with your quote.</p>
+        <p class="muted">Booking reference: <strong id="successRef"></strong></p>
+        <button class="btn btn-primary btn-block" onclick="closeBooking()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
