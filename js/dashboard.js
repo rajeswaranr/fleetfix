@@ -506,6 +506,77 @@ function loadDemo() {
   renderAll();
 }
 
+// ---------- Tally export (GST & accounting) ----------
+// Generates Tally-importable XML (Tally Prime / ERP 9): one Payment voucher
+// per expense, debiting a "Vehicle Maintenance - <category>" expense ledger
+// and crediting Cash. Ledger masters are included so import works on a
+// fresh company. Import via Gateway of Tally > Import Data > Vouchers.
+function xmlEsc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+function exportTally() {
+  if (!db.expenses.length) { alert("No expenses to export yet."); return; }
+  const vName = id => { const v = db.vehicles.find(x => x.id === id); return v ? v.name : "Unknown vehicle"; };
+  const cats = [...new Set(db.expenses.map(e => e.category))];
+
+  const ledgers = cats.map(c => `
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+      <LEDGER NAME="Vehicle Maintenance - ${xmlEsc(c)}" ACTION="Create">
+        <NAME.LIST><NAME>Vehicle Maintenance - ${xmlEsc(c)}</NAME></NAME.LIST>
+        <PARENT>Indirect Expenses</PARENT>
+      </LEDGER>
+    </TALLYMESSAGE>`).join("");
+
+  const vouchers = [...db.expenses]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((e, i) => {
+      const d = e.date.replace(/-/g, "");
+      const amt = e.amount.toFixed(2);
+      const narr = `FleetWorks: ${e.category} - ${vName(e.vehicleId)}` + (e.odo ? ` @ ${e.odo} km` : "");
+      return `
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+      <VOUCHER VCHTYPE="Payment" ACTION="Create" OBJVIEW="Accounting Voucher View">
+        <DATE>${d}</DATE>
+        <EFFECTIVEDATE>${d}</EFFECTIVEDATE>
+        <VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>
+        <VOUCHERNUMBER>FW-${i + 1}</VOUCHERNUMBER>
+        <NARRATION>${xmlEsc(narr)}</NARRATION>
+        <PARTYLEDGERNAME>Cash</PARTYLEDGERNAME>
+        <ALLLEDGERENTRIES.LIST>
+          <LEDGERNAME>Vehicle Maintenance - ${xmlEsc(e.category)}</LEDGERNAME>
+          <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+          <AMOUNT>-${amt}</AMOUNT>
+        </ALLLEDGERENTRIES.LIST>
+        <ALLLEDGERENTRIES.LIST>
+          <LEDGERNAME>Cash</LEDGERNAME>
+          <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+          <AMOUNT>${amt}</AMOUNT>
+        </ALLLEDGERENTRIES.LIST>
+      </VOUCHER>
+    </TALLYMESSAGE>`;
+    }).join("");
+
+  const xml = `<ENVELOPE>
+  <HEADER><TALLYREQUEST>Import Data</TALLYREQUEST></HEADER>
+  <BODY><IMPORTDATA>
+    <REQUESTDESC>
+      <REPORTNAME>Vouchers</REPORTNAME>
+      <STATICVARIABLES><IMPORTDUPS>@@DUPCOMBINE</IMPORTDUPS></STATICVARIABLES>
+    </REQUESTDESC>
+    <REQUESTDATA>${ledgers}${vouchers}
+    </REQUESTDATA>
+  </IMPORTDATA></BODY>
+</ENVELOPE>`;
+
+  const blob = new Blob([xml], { type: "application/xml" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "fleetworks-tally-vouchers.xml";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 // ---------- Data management ----------
 function exportData() {
   const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });

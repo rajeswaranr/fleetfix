@@ -429,6 +429,22 @@ input[type="file"] {
 .btn.danger { color: #b91c1c; border-color: #b91c1c; }
 .btn.danger:hover { background: #b91c1c; color: #fff; }
 
+/* Why FleetWorks comparison table */
+.compare-table {
+  width: 100%; border-collapse: collapse; background: #fff;
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  min-width: 640px; font-size: 0.9rem;
+}
+.compare-table th {
+  text-align: left; padding: 14px 18px; background: var(--navy); color: #fff;
+  font-size: 0.88rem; font-weight: 700;
+}
+.compare-table td { padding: 13px 18px; border-bottom: 1px solid var(--bg-alt); color: var(--ink); }
+.compare-table td:first-child { font-weight: 500; }
+.compare-table .fw-col { background: rgba(245, 166, 35, 0.09); font-weight: 600; }
+.compare-table th.fw-col { background: var(--amber); color: var(--navy); }
+.compare-table tr:last-child td { border-bottom: none; }
+
 /* AI features section on the homepage */
 .ai-strip {
   background: linear-gradient(120deg, #101f36, #1d3a63); color: #fff;
