@@ -1,4 +1,4 @@
-/* ============ FleetFix — partner.js (vendor onboarding) ============ */
+/* ============ FleetWorks — partner.js (vendor onboarding) ============ */
 
 // ---------- Navbar ----------
 const navbar = document.getElementById("navbar");
@@ -108,7 +108,7 @@ vendorForm.elements.pincode.addEventListener("input", (e) => {
 
 // ---------- Submission ----------
 function makeVendorRef() {
-  return "FFV-" + Date.now().toString(36).toUpperCase().slice(-6);
+  return "FWV-" + Date.now().toString(36).toUpperCase().slice(-6);
 }
 
 function getVendors() {

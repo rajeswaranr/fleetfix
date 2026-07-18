@@ -1,4 +1,4 @@
-/* ============ FleetFix — main.js ============ */
+/* ============ FleetWorks — main.js ============ */
 
 // ---------- Navbar ----------
 const navbar = document.getElementById("navbar");
@@ -84,7 +84,7 @@ document.querySelectorAll('input[name="phone"]').forEach((input) => {
 });
 
 function makeRef() {
-  return "FF-" + Date.now().toString(36).toUpperCase().slice(-6);
+  return "FW-" + Date.now().toString(36).toUpperCase().slice(-6);
 }
 
 function saveLead(data) {

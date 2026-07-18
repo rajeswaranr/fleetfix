@@ -1,4 +1,4 @@
-/* ============ FleetFix — dashboard.js ============
+/* ============ FleetWorks — dashboard.js ============
    AI/ML fleet expense analytics:
    - monthly / vehicle-wise / part-wise aggregation
    - fleet-average and industry-average benchmarking
@@ -511,7 +511,7 @@ function exportData() {
   const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "fleetfix-data.json";
+  a.download = "fleetworks-data.json";
   a.click();
   URL.revokeObjectURL(a.href);
 }
