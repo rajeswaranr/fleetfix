@@ -1,7 +1,7 @@
 {
-  "name": "FleetFix - Heavy Vehicle Services",
+  "name": "FleetFix - AI Vehicle Maintenance",
   "short_name": "FleetFix",
-  "description": "Book mechanical repairs, tyre services, battery replacement and 24x7 breakdown support for trucks, buses and commercial fleets.",
+  "description": "India's First AI/ML vehicle maintenance and management system: repairs, expense analytics, industry benchmarking and predictive maintenance for commercial fleets.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -16,6 +16,11 @@
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
+    {
+      "name": "AI Dashboard",
+      "url": "./dashboard.html",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
     {
       "name": "Book a Service",
       "url": "./index.html#services",

@@ -1,12 +1,14 @@
 /* FleetFix service worker — network-first with offline fallback cache */
-const CACHE = "fleetfix-v1";
+const CACHE = "fleetfix-v2";
 const CORE = [
   "./",
   "./index.html",
   "./partner.html",
+  "./dashboard.html",
   "./css/style.css",
   "./js/main.js",
   "./js/partner.js",
+  "./js/dashboard.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
