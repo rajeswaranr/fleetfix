@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.fleetfix.app",
+      "sha256_cert_fingerprints": [
+        "D8:96:18:2C:34:1E:46:C3:4A:24:DF:36:A9:85:CC:4A:4F:38:83:F2:F6:1C:98:73:74:73:D5:3A:23:8C:28:90"
+      ]
+    }
+  }
+]
