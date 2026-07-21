@@ -117,7 +117,7 @@ function renderPortal() {
   const openIss = db.issues.filter(i => i.status !== "Resolved").length;
   document.getElementById("ownerStats").innerHTML = `
     <div class="stat-tile"><span class="stat-label">My vehicles</span><span class="stat-value">${db.vehicles.length}</span></div>
-    <div class="stat-tile"><span class="stat-label">This month (all-in)</span><span class="stat-value">${fmtINR(monthSpend)}</span><span class="stat-sub">diesel + kharcha</span></div>
+    <div class="stat-tile"><span class="stat-label">This month (all-in)</span><span class="stat-value">${fmtINR(monthSpend)}</span><span class="stat-sub">diesel + expenses</span></div>
     <div class="stat-tile"><span class="stat-label">Open problems</span><span class="stat-value" style="color:${openIss ? "#d03b3b" : "#0ca30c"}">${openIss}</span></div>
     <div class="stat-tile"><span class="stat-label">Total entries</span><span class="stat-value">${db.expenses.length + db.fuelLogs.length}</span><span class="stat-sub">feeding your AI</span></div>`;
   if (!selVehicle && db.vehicles.length) selVehicle = db.vehicles[0].id;
@@ -134,7 +134,7 @@ function renderRecent() {
   ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 10);
   document.getElementById("recentList").innerHTML = items.length ?
     items.map(i => `<div class="pred-row" style="padding:10px 16px"><div class="pred-main" style="font-size:0.88rem">${i.icon} ${esc(i.txt)}<span class="muted" style="font-size:0.78rem">${fmtDate(i.date)}</span></div></div>`).join("")
-    : "<p class='muted'>No entries yet. Add your first diesel fill or kharcha above — 10 seconds ka kaam.</p>";
+    : "<p class='muted'>No entries yet. Add your first diesel fill or expense above — takes 10 seconds.</p>";
 }
 
 // ---------- Entry forms ----------
@@ -151,7 +151,7 @@ document.getElementById("vehForm").addEventListener("submit", e => {
   db.vehicles.push(v);
   selVehicle = v.id;
   saveStore(); e.target.reset(); renderPortal();
-  alert(`${v.name} added! Now add its diesel and kharcha entries — FleetWorks AI starts learning immediately.`);
+  alert(`${v.name} added! Now add its diesel and expense entries — FleetWorks AI starts learning immediately.`);
 });
 
 document.getElementById("fuelForm").addEventListener("submit", e => {

@@ -2,7 +2,7 @@
    Sarathi — the FleetWorks AI: a floating chat assistant that answers
    questions from the fleet data in localStorage ("ff_fleet").
    (Sarathi = charioteer: the trusted guide who steers you right.)
-   Runs fully client-side; understands English + common Hinglish terms. */
+   Runs fully client-side; understands plain English fleet questions. */
 
 (function () {
   "use strict";
@@ -30,7 +30,7 @@
     const has = (...words) => words.some(w => q.includes(w));
 
     // Compliance / documents
-    if (has("insurance", "puc", "permit", "fitness", "road tax", "roadtax", "expir", "document", "rc ", "compliance", "kagaz")) {
+    if (has("insurance", "puc", "permit", "fitness", "road tax", "roadtax", "expir", "document", "rc ", "compliance", "papers")) {
       const rows = [];
       db.vehicles.forEach(v => Object.entries(v.compliance || {}).forEach(([doc, till]) => {
         if (!till) return;
@@ -58,7 +58,7 @@
     }
 
     // Cost per km / most expensive
-    if (has("cost per km", "costliest", "most expensive", "expensive vehicle", "worst vehicle", "mehenga", "sabse")) {
+    if (has("cost per km", "costliest", "most expensive", "expensive vehicle", "worst vehicle")) {
       const stats = db.vehicles.map(v => {
         const spend = db.expenses.filter(e => e.vehicleId === v.id).reduce((s, e) => s + e.amount, 0);
         const months = new Set(db.expenses.filter(e => e.vehicleId === v.id).map(e => monthKey(e.date))).size || 1;
@@ -71,7 +71,7 @@
     }
 
     // Spend / expenses
-    if (has("spend", "expense", "kharcha", "kitna", "total", "cost", "paisa")) {
+    if (has("spend", "expense", "how much", "total", "cost", "money")) {
       const v = findVehicle();
       const thisMonth = has("this month", "month");
       let list = db.expenses;
@@ -87,7 +87,7 @@
     }
 
     // Predictions / due / upcoming
-    if (has("due", "upcoming", "predict", "next", "replace", "kab")) {
+    if (has("due", "upcoming", "predict", "next", "replace", "when")) {
       const rem = db.reminders.map(r => {
         const next = new Date(r.lastDate); next.setMonth(next.getMonth() + (+r.everyMonths || 3));
         return { v: r.vehicleId, task: r.task, next };
@@ -100,7 +100,7 @@
     }
 
     // Drivers / DL
-    if (has("driver", "dl ", " dl", "licence", "license", "chalak")) {
+    if (has("driver", "dl ", " dl", "licence", "license")) {
       if (!db.drivers.length) return "No drivers added yet — add them in Fleet Manager → Drivers, and I'll track DL expiries for you.";
       return "Your drivers:<br>" + db.drivers.map(d => {
         const days = d.dlExpiry ? Math.round((new Date(d.dlExpiry) - new Date()) / 86400000) : null;
@@ -111,7 +111,7 @@
     }
 
     // Job cards / work orders
-    if (has("job card", "work order", "workshop", "garage me", "under repair")) {
+    if (has("job card", "work order", "workshop", "in the garage", "under repair")) {
       const open = db.workOrders.filter(w => w.status !== "Completed");
       if (!open.length) return "No vehicles in the workshop right now — all job cards closed. ✅";
       const vn = id => (db.vehicles.find(x => x.id === id) || {}).name || "?";
@@ -120,7 +120,7 @@
     }
 
     // Issues / priorities
-    if (has("issue", "problem", "priorit", "urgent", "fix", "kharab")) {
+    if (has("issue", "problem", "priorit", "urgent", "fix", "broken")) {
       const open = db.issues.filter(i => i.status !== "Resolved");
       if (!open.length) return "No open issues. 🎉";
       const sevW = { High: 3, Medium: 2, Low: 1 };
@@ -131,7 +131,7 @@
     }
 
     // Help / capabilities
-    if (has("help", "what can", "kya kar")) {
+    if (has("help", "what can")) {
       return "I can answer from your fleet data — try:<br>• \"total spend this month\"<br>• \"which vehicle is most expensive\"<br>• \"mileage of TN-01-AB-1234\"<br>• \"which documents are expiring\"<br>• \"driver licences\"<br>• \"open job cards\"<br>• \"what maintenance is due next\"<br>• \"open issues by priority\"";
     }
 
@@ -150,7 +150,7 @@
         </span>
       </div>
       <div class="cp-body" id="cpBody">
-        <div class="cp-msg cp-bot">Namaste! 🙏 I'm <strong>Sarathi</strong>, your fleet's AI. Ask me about kharcha, mileage, RTO documents, driver DLs, job cards or maintenance — English ya Hinglish, dono chalega.</div>
+        <div class="cp-msg cp-bot">Hello! 👋 I'm <strong>Sarathi</strong>, your fleet's AI. Ask me about expenses, mileage, RTO documents, driver licences, job cards or maintenance — plain English works great.</div>
         <div class="cp-chips" id="cpChips">
           <button data-q="Total spend this month">Spend this month</button>
           <button data-q="Which vehicle is most expensive per km?">Costliest vehicle</button>
