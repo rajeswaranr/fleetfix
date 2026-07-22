@@ -18,8 +18,8 @@
   <!-- ======= TOP BAR ======= -->
   <div class="topbar">
     <div class="container topbar-inner">
-      <span>🛞 24x7 Breakdown Helpline: <a href="tel:+919740799722"><strong>+91 97407 99722</strong></a></span>
-      <span class="topbar-cities ai-glow">🇮🇳 India's First AI/ML Vehicle Maintenance &amp; Management System</span>
+      <span><i data-icon="phone" data-icon-size="13"></i> 24×7 Breakdown Helpline: <a href="tel:+919740799722"><strong>+91 97407 99722</strong></a></span>
+      <span class="topbar-cities ai-glow">India's First AI/ML Vehicle Maintenance &amp; Management System</span>
     </div>
   </div>
 
@@ -48,7 +48,7 @@
   <!-- ======= DASH HEADER ======= -->
   <section class="dash-hero">
     <div class="container">
-      <span class="badge">🤖 AI/ML Fleet Intelligence</span>
+      <span class="badge"><i data-icon="brain" data-icon-size="14"></i> AI/ML Fleet Intelligence</span>
       <h1>Your Fleet's Money, <span class="accent">Decoded.</span></h1>
       <p>Track every rupee monthly-wise, vehicle-wise and part-wise. Benchmark against your own fleet and industry averages, and let our ML models predict what you'll spend next — before the part fails.</p>
     </div>
@@ -58,7 +58,7 @@
 
     <!-- Empty state -->
     <div id="emptyState" class="empty-state" hidden>
-      <div class="empty-icon">📊</div>
+      <div class="empty-icon"><i data-icon="chartBar" data-icon-size="46"></i></div>
       <h2>No fleet data yet</h2>
       <p>Add your vehicles and expenses below, or load a realistic demo fleet to explore the AI analytics.</p>
       <button class="btn btn-primary" onclick="loadDemo()">Load Demo Fleet</button>
@@ -125,7 +125,7 @@
       <section class="chart-card">
         <div class="chart-head">
           <div>
-            <h2>🔮 Predicted Upcoming Expenses</h2>
+            <h2 class="head-ic"><span class="ic-tile brand"><i data-icon="trendUp" data-icon-size="22"></i></span> Predicted Upcoming Expenses</h2>
             <p class="muted">ML predictions from your service history, usage rate and part lifespan models</p>
           </div>
         </div>
@@ -194,7 +194,7 @@
           </form>
         </div>
         <div class="entry-actions">
-          <button class="btn btn-primary btn-sm" onclick="exportTally()">🧾 Export to Tally (GST)</button>
+          <button class="btn btn-primary btn-sm" onclick="exportTally()"><i data-icon="receipt" data-icon-size="15"></i> Export to Tally (GST)</button>
           <button class="btn btn-outline btn-sm" onclick="exportData()">Export Data (JSON)</button>
           <button class="btn btn-outline btn-sm danger" onclick="clearData()">Clear All Data</button>
         </div>
@@ -216,13 +216,13 @@
         <h4>Platform</h4>
         <a href="index.html#services">Services</a>
         <a href="dashboard.html">AI Dashboard</a>
-        <a href="index.html#fleet">Fleet AMC Plans</a>
+        <a href="fleet.html">Fleet Manager</a>
         <a href="partner.html">Partner With Us</a>
       </div>
       <div>
         <h4>Contact</h4>
-        <a href="tel:+919740799722">📞 +91 97407 99722</a>
-        <a href="mailto:admin@fleetworks.in">✉️ admin@fleetworks.in</a>
+        <a href="tel:+919740799722"><i data-icon="phone" data-icon-size="13"></i> +91 97407 99722</a>
+        <a href="mailto:admin@fleetworks.in"><i data-icon="mail" data-icon-size="13"></i> admin@fleetworks.in</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -233,6 +233,7 @@
     </div>
   </footer>
 
+  <script src="js/icons.js"></script>
   <script src="js/backend.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/copilot.js"></script>

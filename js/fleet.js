@@ -110,8 +110,8 @@ function computeInsights() {
     Object.entries(v.compliance || {}).forEach(([doc, till]) => {
       if (!till) return;
       const d = daysUntil(till);
-      if (d < 0) out.push({ sev: 4, icon: "🔴", tag: "Compliance", title: `${v.name}: ${DOC_LABELS[doc]} EXPIRED`, detail: `Expired ${-d} days ago (${fmtDate(till)}). Vehicle is non-compliant — renew immediately to avoid penalties.` });
-      else if (d <= 30) out.push({ sev: 3, icon: "🟠", tag: "Compliance", title: `${v.name}: ${DOC_LABELS[doc]} expires in ${d} days`, detail: `Valid till ${fmtDate(till)}. Renew before expiry to keep the vehicle on the road.` });
+      if (d < 0) out.push({ sev: 4, icon: "document", tag: "Compliance", title: `${v.name}: ${DOC_LABELS[doc]} EXPIRED`, detail: `Expired ${-d} days ago (${fmtDate(till)}). Vehicle is non-compliant — renew immediately to avoid penalties.` });
+      else if (d <= 30) out.push({ sev: 3, icon: "document", tag: "Compliance", title: `${v.name}: ${DOC_LABELS[doc]} expires in ${d} days`, detail: `Valid till ${fmtDate(till)}. Renew before expiry to keep the vehicle on the road.` });
     });
   });
 
@@ -121,7 +121,7 @@ function computeInsights() {
   db.expenses.slice(-60).forEach(e => {
     const med = median(byCat[e.category]);
     if (byCat[e.category].length >= 4 && e.amount > med * 1.8) {
-      out.push({ sev: 2, icon: "🧾", tag: "Review flagged", title: `${vName(e.vehicleId)}: ${e.category} bill ${fmtINR(e.amount)} looks high`, detail: `Your typical ${e.category} spend is ${fmtINR(med)}. Worth confirming the itemised bill (${fmtDate(e.date)}).` });
+      out.push({ sev: 2, icon: "receipt", tag: "Review flagged", title: `${vName(e.vehicleId)}: ${e.category} bill ${fmtINR(e.amount)} looks high`, detail: `Your typical ${e.category} spend is ${fmtINR(med)}. Worth confirming the itemised bill (${fmtDate(e.date)}).` });
     }
   });
 
@@ -131,7 +131,7 @@ function computeInsights() {
     const a = sorted[i - 1], b = sorted[i];
     if (a.vehicleId === b.vehicleId && a.category === b.category &&
         Math.abs(new Date(b.date) - new Date(a.date)) <= 7 * 86400000 && a.category !== "Other" && a.category !== "Engine Oil & Filters") {
-      out.push({ sev: 2, icon: "👀", tag: "Review flagged", title: `${vName(a.vehicleId)}: two ${a.category} charges within a week`, detail: `${fmtINR(a.amount)} on ${fmtDate(a.date)} and ${fmtINR(b.amount)} on ${fmtDate(b.date)}. Confirm the second is not a duplicate billing.` });
+      out.push({ sev: 2, icon: "eye", tag: "Review flagged", title: `${vName(a.vehicleId)}: two ${a.category} charges within a week`, detail: `${fmtINR(a.amount)} on ${fmtDate(a.date)} and ${fmtINR(b.amount)} on ${fmtDate(b.date)}. Confirm the second is not a duplicate billing.` });
     }
   }
 
@@ -142,32 +142,32 @@ function computeInsights() {
       const base = median(pts.slice(0, -1).map(p => p.kmpl));
       const last = pts[pts.length - 1].kmpl;
       if (last < base * 0.85) {
-        out.push({ sev: 3, icon: "⛽", tag: "Fuel anomaly", title: `${v.name}: mileage dropped to ${last.toFixed(1)} km/l`, detail: `Usual is ~${base.toFixed(1)} km/l. Check tyre pressure, air filter, injectors — or possible fuel pilferage.` });
+        out.push({ sev: 3, icon: "fuel", tag: "Fuel anomaly", title: `${v.name}: mileage dropped to ${last.toFixed(1)} km/l`, detail: `Usual is ~${base.toFixed(1)} km/l. Check tyre pressure, air filter, injectors — or possible fuel pilferage.` });
       }
     }
   });
 
   // 5. Overdue PM reminders
   reminderStatus().forEach(r => {
-    if (r.overdue) out.push({ sev: 3, icon: "🗓️", tag: "Maintenance", title: `${vName(r.vehicleId)}: ${r.task} overdue`, detail: `Was due ${fmtDate(r.nextDate)}. Book it before it becomes a breakdown.` });
+    if (r.overdue) out.push({ sev: 3, icon: "calendarClock", tag: "Maintenance", title: `${vName(r.vehicleId)}: ${r.task} overdue`, detail: `Was due ${fmtDate(r.nextDate)}. Book it before it becomes a breakdown.` });
   });
 
   // 6. Open high-severity issues
   db.issues.filter(i => i.status !== "Resolved" && i.severity === "High").forEach(i => {
-    out.push({ sev: 4, icon: "⚠️", tag: "Issue", title: `${vName(i.vehicleId)}: ${i.title}`, detail: `High-severity issue open since ${fmtDate(i.createdAt)}. Top of the AI priority list.` });
+    out.push({ sev: 4, icon: "alert", tag: "Issue", title: `${vName(i.vehicleId)}: ${i.title}`, detail: `High-severity issue open since ${fmtDate(i.createdAt)}. Top of the AI priority list.` });
   });
 
   // 7. Low parts stock
   db.parts.filter(p => p.qty <= p.minQty).forEach(p => {
-    out.push({ sev: 1, icon: "🔩", tag: "Godown", title: `Low stock: ${p.name}`, detail: `${p.qty} left (alert level ${p.minQty}). Reorder to avoid workshop delays.` });
+    out.push({ sev: 1, icon: "boxes", tag: "Godown", title: `Low stock: ${p.name}`, detail: `${p.qty} left (alert level ${p.minQty}). Reorder to avoid workshop delays.` });
   });
 
   // 7b. Part warranty expiring
   db.parts.forEach(p => {
     if (!p.warrantyExpiry) return;
     const d = daysUntil(p.warrantyExpiry);
-    if (d < 0) out.push({ sev: 2, icon: "🛡️", tag: "Warranty", title: `${p.name}: warranty expired`, detail: `Expired ${-d} days ago${p.vendor ? " · " + p.vendor : ""}. Any pending claims should be raised before replacement.` });
-    else if (d <= 30) out.push({ sev: 1, icon: "🛡️", tag: "Warranty", title: `${p.name}: warranty expires in ${d} days`, detail: `${p.vendor ? "Vendor: " + p.vendor + ". " : ""}Raise any known defects with the vendor before it lapses.` });
+    if (d < 0) out.push({ sev: 2, icon: "shieldCheck", tag: "Warranty", title: `${p.name}: warranty expired`, detail: `Expired ${-d} days ago${p.vendor ? " · " + p.vendor : ""}. Any pending claims should be raised before replacement.` });
+    else if (d <= 30) out.push({ sev: 1, icon: "shieldCheck", tag: "Warranty", title: `${p.name}: warranty expires in ${d} days`, detail: `${p.vendor ? "Vendor: " + p.vendor + ". " : ""}Raise any known defects with the vendor before it lapses.` });
   });
 
   // 7c. Worn tyres (tread at/under the safe limit)
@@ -181,8 +181,8 @@ function computeInsights() {
   db.drivers.forEach(dr => {
     if (!dr.dlExpiry) return;
     const d = daysUntil(dr.dlExpiry);
-    if (d < 0) out.push({ sev: 4, icon: "🪪", tag: "Driver DL", title: `${dr.name}: driving licence EXPIRED`, detail: `Expired ${-d} days ago. Driving without a valid DL risks challans and voids insurance claims.` });
-    else if (d <= 30) out.push({ sev: 3, icon: "🪪", tag: "Driver DL", title: `${dr.name}: DL expires in ${d} days`, detail: `Valid till ${fmtDate(dr.dlExpiry)}. Start the renewal at the Parivahan portal now.` });
+    if (d < 0) out.push({ sev: 4, icon: "driver", tag: "Driver DL", title: `${dr.name}: driving licence EXPIRED`, detail: `Expired ${-d} days ago. Driving without a valid DL risks challans and voids insurance claims.` });
+    else if (d <= 30) out.push({ sev: 3, icon: "driver", tag: "Driver DL", title: `${dr.name}: DL expires in ${d} days`, detail: `Valid till ${fmtDate(dr.dlExpiry)}. Start the renewal at the Parivahan portal now.` });
   });
 
   // 9. Possible warranty claims (same part failing again within 12 months)
@@ -193,7 +193,7 @@ function computeInsights() {
       for (let i = 1; i < h.length; i++) {
         const gapM = (new Date(h[i].date) - new Date(h[i - 1].date)) / (30.44 * 86400000);
         if (gapM < 12 && daysUntil(h[i].date) > -90) {
-          out.push({ sev: 2, icon: "🛡️", tag: "Warranty", title: `${v.name}: ${cat} replaced twice in ${Math.round(gapM)} months`, detail: `${fmtINR(h[i].amount)} on ${fmtDate(h[i].date)} may be claimable under the brand warranty from the ${fmtDate(h[i - 1].date)} purchase. Check the bill.` });
+          out.push({ sev: 2, icon: "shieldCheck", tag: "Warranty", title: `${v.name}: ${cat} replaced twice in ${Math.round(gapM)} months`, detail: `${fmtINR(h[i].amount)} on ${fmtDate(h[i].date)} may be claimable under the brand warranty from the ${fmtDate(h[i - 1].date)} purchase. Check the bill.` });
         }
       }
     });
@@ -202,11 +202,11 @@ function computeInsights() {
   // 10. Job cards pending too long
   db.workOrders.filter(w => w.status !== "Completed").forEach(w => {
     const age = Math.round((now - new Date(w.createdAt)) / 86400000);
-    if (age > 5) out.push({ sev: 2, icon: "🔧", tag: "Job card", title: `${vName(w.vehicleId)}: job card open ${age} days`, detail: `"${w.title}" at ${w.vendor || "workshop"} since ${fmtDate(w.createdAt)}. Follow up — every idle day is lost revenue.` });
+    if (age > 5) out.push({ sev: 2, icon: "wrench", tag: "Job card", title: `${vName(w.vehicleId)}: job card open ${age} days`, detail: `"${w.title}" at ${w.vendor || "workshop"} since ${fmtDate(w.createdAt)}. Follow up — every idle day is lost revenue.` });
   });
 
   // 8. All-clear
-  if (!out.length) out.push({ sev: 0, icon: "✅", tag: "All clear", title: "No risks detected", detail: "Compliance, spending, mileage and maintenance all look healthy. The AI keeps watching." });
+  if (!out.length) out.push({ sev: 0, icon: "checkCircle", tag: "All clear", title: "No risks detected", detail: "Compliance, spending, mileage and maintenance all look healthy. The AI keeps watching." });
 
   return out.sort((a, b) => b.sev - a.sev);
 }
@@ -1016,7 +1016,7 @@ document.getElementById("inspectionForm").addEventListener("submit", e => {
     db.issues.push({ id: uid(), vehicleId: vid, title: r.item + " — inspection fault", severity: r.item.includes("Brake") || r.item.includes("Tyre") ? "High" : "Medium", status: "Open", createdAt: new Date().toISOString().slice(0, 10), source: "Inspection" });
   });
   saveStore(); renderInspectionForm(); renderInspectionHistory(); renderIssues(); renderOverview();
-  alert(passed ? "Inspection passed — all 10 points OK ✅" : "Inspection recorded. Failed items have been added to Issues for AI prioritisation.");
+  alert(passed ? "Inspection passed — all 10 points OK" : "Inspection recorded. Failed items have been added to Issues for AI prioritisation.");
 });
 
 document.getElementById("issueForm").addEventListener("submit", e => {

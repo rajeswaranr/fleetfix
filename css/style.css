@@ -365,6 +365,14 @@ input.invalid, select.invalid { border-color: #dc2626; box-shadow: 0 0 0 3px rgb
 .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
 .why-item { text-align: center; padding: 20px; }
 .why-item span { font-size: 2.2rem; display: block; margin-bottom: 10px; }
+.why-item .why-ic {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 50px; height: 50px; border-radius: 14px;
+  background: #eaf0fb; color: var(--navy); margin: 0 auto 12px;
+}
+.cmp-yes { color: var(--green); vertical-align: -2px; }
+.cmp-no { color: #dc2626; vertical-align: -2px; }
+.cmp-warn { color: var(--amber-dark); vertical-align: -2px; }
 .why-item h3 { font-size: 1.02rem; margin-bottom: 6px; }
 .why-item p { font-size: 0.85rem; color: var(--muted); }
 

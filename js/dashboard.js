@@ -420,11 +420,12 @@ function renderPredictions() {
   }
   box.innerHTML = preds.map(p => {
     const pct = Math.min(p.lifeUsed * 100, 100);
-    let status, icon, color;
-    if (p.lifeUsed >= 1)        { status = "Overdue";  icon = "🔴"; color = PAL.critical; }
-    else if (p.lifeUsed >= 0.85){ status = "Due soon"; icon = "🟠"; color = PAL.serious; }
-    else if (p.lifeUsed >= 0.6) { status = "Plan ahead"; icon = "🟡"; color = PAL.warn; }
-    else                        { status = "Healthy";  icon = "🟢"; color = PAL.good; }
+    let status, color;
+    if (p.lifeUsed >= 1)        { status = "Overdue";  color = PAL.critical; }
+    else if (p.lifeUsed >= 0.85){ status = "Due soon"; color = PAL.serious; }
+    else if (p.lifeUsed >= 0.6) { status = "Plan ahead"; color = PAL.warn; }
+    else                        { status = "Healthy";  color = PAL.good; }
+    const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};vertical-align:1px"></span>`;
     const due = p.lifeUsed >= 1 ? "now" :
       "~" + p.dueDate.toLocaleDateString("en-IN", { month: "short", year: "numeric" }) +
       (p.kmLeft > 0 ? " · " + p.kmLeft.toLocaleString("en-IN") + " km left" : "");
@@ -432,7 +433,7 @@ function renderPredictions() {
       <div class="pred-row">
         <div class="pred-main">
           <strong>${esc(p.vehicle.name)}</strong> — ${esc(p.category)}
-          <span class="pred-status" style="color:${color}">${icon} ${status}</span>
+          <span class="pred-status" style="color:${color}">${dot} ${status}</span>
         </div>
         <div class="pred-meter"><div class="pred-fill" style="width:${pct}%;background:${color}"></div></div>
         <div class="pred-detail">

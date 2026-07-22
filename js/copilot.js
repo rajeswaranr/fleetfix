@@ -36,7 +36,7 @@
         const d = Math.round((new Date(till) - new Date()) / 86400000);
         if (d < 60) rows.push({ v: v.name, doc: DOC_LABELS[doc], d, till });
       }));
-      if (!rows.length) return "All RTO documents (Insurance, PUC, Fitness, Permit, Road Tax) are valid for at least 60 days. ✅";
+      if (!rows.length) return "All RTO documents (Insurance, PUC, Fitness, Permit, Road Tax) are valid for at least 60 days.";
       rows.sort((a, b) => a.d - b.d);
       return "Documents needing attention:<br>" + rows.map(r =>
         `• <strong>${esc(r.v)}</strong> — ${r.doc}: ${r.d < 0 ? "<span style='color:#d03b3b'>EXPIRED " + (-r.d) + " days ago</span>" : r.d + " days left"}`).join("<br>");
@@ -112,7 +112,7 @@
     // Job cards / work orders
     if (has("job card", "work order", "workshop", "in the garage", "under repair")) {
       const open = db.workOrders.filter(w => w.status !== "Completed");
-      if (!open.length) return "No vehicles in the workshop right now — all job cards closed. ✅";
+      if (!open.length) return "No vehicles in the workshop right now — all job cards closed.";
       const vn = id => (db.vehicles.find(x => x.id === id) || {}).name || "?";
       return `${open.length} open job card(s):<br>` + open.map(w =>
         `• <strong>${esc(vn(w.vehicleId))}</strong> — ${esc(w.title)} at ${esc(w.vendor || "workshop")} (since ${new Date(w.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })})`).join("<br>");
@@ -121,7 +121,7 @@
     // Issues / priorities
     if (has("issue", "problem", "priorit", "urgent", "fix", "broken")) {
       const open = db.issues.filter(i => i.status !== "Resolved");
-      if (!open.length) return "No open issues. 🎉";
+      if (!open.length) return "No open issues.";
       const sevW = { High: 3, Medium: 2, Low: 1 };
       const vn = id => (db.vehicles.find(x => x.id === id) || {}).name || "?";
       const ranked = open.sort((a, b) => sevW[b.severity] - sevW[a.severity]).slice(0, 5);
@@ -149,7 +149,7 @@
         </span>
       </div>
       <div class="cp-body" id="cpBody">
-        <div class="cp-msg cp-bot">Hello! 👋 I'm <strong>Copilot</strong>, your fleet's AI. Ask me about expenses, mileage, RTO documents, driver licences, job cards or maintenance — plain English works great.</div>
+        <div class="cp-msg cp-bot">Hello! I'm <strong>Copilot</strong>, your fleet's AI. Ask me about expenses, mileage, RTO documents, driver licences, job cards or maintenance — plain English works great.</div>
         <div class="cp-chips" id="cpChips">
           <button data-q="Total spend this month">Spend this month</button>
           <button data-q="Which vehicle is most expensive per km?">Costliest vehicle</button>

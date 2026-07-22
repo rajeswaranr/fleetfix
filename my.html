@@ -18,8 +18,8 @@
   <!-- ======= TOP BAR ======= -->
   <div class="topbar">
     <div class="container topbar-inner">
-      <span>🛞 24x7 Breakdown Helpline: <a href="tel:+919740799722"><strong>+91 97407 99722</strong></a></span>
-      <span class="topbar-cities ai-glow">🇮🇳 India's First AI/ML Vehicle Maintenance &amp; Management System</span>
+      <span><i data-icon="phone" data-icon-size="13"></i> 24×7 Breakdown Helpline: <a href="tel:+919740799722"><strong>+91 97407 99722</strong></a></span>
+      <span class="topbar-cities ai-glow">India's First AI/ML Vehicle Maintenance &amp; Management System</span>
     </div>
   </div>
 
@@ -47,7 +47,7 @@
     <!-- ======= SIGNED OUT ======= -->
     <div id="authView" hidden>
       <div class="dash-hero" style="border-radius:var(--radius);padding:36px 30px;margin-bottom:24px">
-        <span class="badge">🚛 For Transport Owners</span>
+        <span class="badge"><i data-icon="truck" data-icon-size="14"></i> For Transport Owners</span>
         <h1 style="font-size:clamp(1.5rem,3vw,2.2rem)">My <span class="accent">FleetWorks</span></h1>
         <p>One account for your whole fleet. Add diesel, expenses and problems in seconds — FleetWorks AI turns them into savings, predictions and Tally-ready accounts. Works on phone and computer, data always backed up.</p>
       </div>
@@ -101,7 +101,7 @@
     <div id="portalView" hidden>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
         <div>
-          <h1 style="color:var(--navy);font-size:1.5rem">Welcome back, <span id="ownerName">Owner</span> 👋</h1>
+          <h1 style="color:var(--navy);font-size:1.5rem">Welcome back, <span id="ownerName">Owner</span></h1>
           <p class="muted" style="font-size:0.85rem">Your entries sync to the cloud automatically. <span id="syncState"></span></p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -114,10 +114,10 @@
 
       <!-- Entry type tabs -->
       <div class="tab-bar" id="entryTabs">
-        <button class="tab-btn active" data-tab="fuel">⛽ Diesel</button>
-        <button class="tab-btn" data-tab="expense">🧾 Expense</button>
-        <button class="tab-btn" data-tab="issue">⚠️ Problem</button>
-        <button class="tab-btn" data-tab="vehicle">🚛 Vehicle</button>
+        <button class="tab-btn active" data-tab="fuel"><i data-icon="fuel" data-icon-size="16"></i> Diesel</button>
+        <button class="tab-btn" data-tab="expense"><i data-icon="receipt" data-icon-size="16"></i> Expense</button>
+        <button class="tab-btn" data-tab="issue"><i data-icon="alert" data-icon-size="16"></i> Problem</button>
+        <button class="tab-btn" data-tab="vehicle"><i data-icon="truck" data-icon-size="16"></i> Vehicle</button>
       </div>
 
       <!-- Diesel -->
@@ -142,7 +142,7 @@
                 <input type="date" name="date" required />
               </label>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Save Diesel Entry ⛽</button>
+            <button type="submit" class="btn btn-primary btn-block"><i data-icon="fuel" data-icon-size="16"></i> Save Diesel Entry</button>
           </form>
         </div>
       </section>
@@ -174,7 +174,7 @@
                 <input type="number" name="odo" min="0" placeholder="meter reading" inputmode="numeric" />
               </label>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Save Expense 🧾</button>
+            <button type="submit" class="btn btn-primary btn-block"><i data-icon="receipt" data-icon-size="16"></i> Save Expense</button>
           </form>
         </div>
       </section>
@@ -193,7 +193,7 @@
                 <option>Low</option><option selected>Medium</option><option>High</option>
               </select>
             </label>
-            <button type="submit" class="btn btn-primary btn-block">Report Problem ⚠️</button>
+            <button type="submit" class="btn btn-primary btn-block"><i data-icon="alert" data-icon-size="16"></i> Report Problem</button>
           </form>
         </div>
       </section>
@@ -218,7 +218,7 @@
                 <input type="number" name="kmPerMonth" min="100" placeholder="e.g. 8000" required inputmode="numeric" />
               </label>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Add Vehicle 🚛</button>
+            <button type="submit" class="btn btn-primary btn-block"><i data-icon="plus" data-icon-size="16"></i> Add Vehicle</button>
           </form>
         </div>
       </section>

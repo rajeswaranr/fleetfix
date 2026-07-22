@@ -120,8 +120,8 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 // ---------- Vehicle chips ----------
 function renderChips() {
   const chips = db.vehicles.map(v =>
-    `<button type="button" class="vchip ${selVehicle === v.id ? "sel" : ""}" data-vid="${v.id}">🚛 ${esc(v.name)}</button>`).join("") +
-    (db.vehicles.length ? "" : `<p class="muted">No vehicles yet — add one in the 🚛 Vehicle tab first.</p>`);
+    `<button type="button" class="vchip ${selVehicle === v.id ? "sel" : ""}" data-vid="${v.id}">${FWIcon("truck", { size: 14 })} ${esc(v.name)}</button>`).join("") +
+    (db.vehicles.length ? "" : `<p class="muted">No vehicles yet — add one in the Vehicle tab first.</p>`);
   ["fuelChips", "expChips", "issChips"].forEach(id => document.getElementById(id).innerHTML = chips);
   document.querySelectorAll(".vchip").forEach(b => b.addEventListener("click", () => {
     selVehicle = b.dataset.vid;
@@ -153,20 +153,22 @@ function renderPortal() {
 
 function renderRecent() {
   const items = [
-    ...db.fuelLogs.map(f => ({ date: f.date, icon: "⛽", txt: `${vName(f.vehicleId)} — ${f.litres}L diesel, ${fmtINR(f.amount)}` })),
-    ...db.expenses.map(e => ({ date: e.date, icon: "🧾", txt: `${vName(e.vehicleId)} — ${e.category}, ${fmtINR(e.amount)}` })),
-    ...db.issues.map(i => ({ date: i.createdAt, icon: i.status === "Resolved" ? "✅" : "⚠️", txt: `${vName(i.vehicleId)} — ${i.title} (${i.status})` }))
+    ...db.fuelLogs.map(f => ({ date: f.date, ic: "fuel", tone: "info", txt: `${vName(f.vehicleId)} — ${f.litres}L diesel, ${fmtINR(f.amount)}` })),
+    ...db.expenses.map(e => ({ date: e.date, ic: "receipt", tone: "brand", txt: `${vName(e.vehicleId)} — ${e.category}, ${fmtINR(e.amount)}` })),
+    ...db.issues.map(i => ({ date: i.createdAt, ic: i.status === "Resolved" ? "checkCircle" : "alert", tone: i.status === "Resolved" ? "success" : "warning", txt: `${vName(i.vehicleId)} — ${i.title} (${i.status})` }))
   ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 10);
   document.getElementById("recentList").innerHTML = items.length ?
-    items.map(i => `<div class="pred-row" style="padding:10px 16px"><div class="pred-main" style="font-size:0.88rem">${i.icon} ${esc(i.txt)}<span class="muted" style="font-size:0.78rem">${fmtDate(i.date)}</span></div></div>`).join("")
+    items.map(i => `<div class="pred-row" style="padding:10px 16px"><div class="pred-main" style="font-size:0.88rem;display:flex;align-items:center;gap:9px"><span class="ic-tile ${i.tone}" style="width:28px;height:28px;flex:none">${FWIcon(i.ic, { size: 15 })}</span><span style="flex:1;min-width:0">${esc(i.txt)}</span><span class="muted" style="font-size:0.78rem;flex:none">${fmtDate(i.date)}</span></div></div>`).join("")
     : "<p class='muted'>No entries yet. Add your first diesel fill or expense above — takes 10 seconds.</p>";
 }
 
 // ---------- Entry forms ----------
 document.getElementById("entryTabs").addEventListener("click", e => {
-  if (!e.target.dataset.tab) return;
-  document.querySelectorAll("#entryTabs .tab-btn").forEach(b => b.classList.toggle("active", b === e.target));
-  document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === "tab-" + e.target.dataset.tab));
+  // closest() so clicks on the inner SVG icon still resolve to the tab button
+  const btn = e.target.closest(".tab-btn");
+  if (!btn || !btn.dataset.tab) return;
+  document.querySelectorAll("#entryTabs .tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === "tab-" + btn.dataset.tab));
 });
 
 document.getElementById("vehForm").addEventListener("submit", e => {
