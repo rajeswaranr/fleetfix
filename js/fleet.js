@@ -1020,6 +1020,27 @@ document.getElementById("tabBar").addEventListener("click", e => {
   const title = document.getElementById("pageTitle");
   if (title) title.textContent = (btn.textContent || "").trim();
   document.getElementById("appSide")?.classList.remove("open");
+  clearPageSearch();
+});
+
+// ---------- Top-bar page search (filters the active panel's lists) ----------
+function clearPageSearch() {
+  const inp = document.getElementById("globalSearch");
+  if (!inp) return;
+  inp.value = "";
+  document.querySelectorAll(".tab-panel tbody tr, .tab-panel .pred-row, .tab-panel .tyre-cell")
+    .forEach(el => { el.style.display = ""; });
+}
+document.getElementById("globalSearch")?.addEventListener("input", e => {
+  const q = e.target.value.trim().toLowerCase();
+  const panel = document.querySelector(".tab-panel.active");
+  if (!panel) return;
+  panel.querySelectorAll("tbody tr:not(.veh-history)").forEach(tr => {
+    tr.style.display = !q || tr.textContent.toLowerCase().includes(q) ? "" : "none";
+  });
+  panel.querySelectorAll(".pred-row, .tyre-cell").forEach(el => {
+    el.style.display = !q || el.textContent.toLowerCase().includes(q) ? "" : "none";
+  });
 });
 
 // Sidebar drawer toggle (mobile)
@@ -1043,5 +1064,7 @@ function renderAll() {
   renderInspectionForm(); renderInspectionHistory();
   renderIssues(); renderWorkOrders(); renderReminders(); renderParts();
   renderRadar(); renderDocuments(); renderTyres(); renderSettings();
+  const org = document.getElementById("topOrg");
+  if (org) org.textContent = (db.settings && db.settings.businessName) || "My Fleet";
 }
 renderAll();

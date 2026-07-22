@@ -964,5 +964,37 @@ i[data-icon] { display: inline-flex; align-items: center; justify-content: cente
   .side-close { display: block; }
   .side-toggle { display: flex; }
   .app-content { padding: 18px 16px; }
+  .top-search { display: none; }
+  .top-org { display: none; }
 }
+
+/* ---- top-bar search + tenant (Fleetio-style) ---- */
+.top-search {
+  display: flex; align-items: center; gap: 8px; flex: 1; max-width: 340px;
+  background: var(--bg-alt); border: 1.5px solid var(--line); border-radius: 9px;
+  padding: 7px 12px; color: var(--muted);
+}
+.top-search:focus-within { border-color: var(--amber); background: #fff; }
+.top-search input {
+  border: none; outline: none; background: none; width: 100%;
+  font-family: inherit; font-size: 0.86rem; color: var(--ink);
+}
+.top-search .fw-ic { flex: none; }
+.app-top-actions { display: flex; align-items: center; gap: 14px; }
+.top-org { font-size: 0.82rem; font-weight: 700; color: var(--navy); white-space: nowrap; }
+
+/* ---- data tables, Fleetio-style ---- */
+.app-content .chart-table-el { border-collapse: separate; border-spacing: 0; width: 100%; }
+.app-content .chart-table-el thead th {
+  position: sticky; top: 0; z-index: 2; background: var(--bg-alt);
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); padding: 10px 14px; border-bottom: 1.5px solid var(--line);
+  white-space: nowrap;
+}
+.app-content .chart-table-el tbody td {
+  padding: 12px 14px; border-bottom: 1px solid var(--bg-alt);
+  font-variant-numeric: tabular-nums;
+}
+.app-content .chart-table-el tbody tr:not(.veh-history):hover td { background: #f6f9fd; }
+.app-content .chart-table-el tbody tr:last-child td { border-bottom: none; }
 
