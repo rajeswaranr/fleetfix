@@ -18,7 +18,7 @@
   "shortcuts": [
     {
       "name": "AI Dashboard",
-      "url": "./dashboard.html",
+      "url": "./fleet.html#analytics",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {

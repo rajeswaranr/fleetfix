@@ -1,15 +1,15 @@
-/* ============ FleetWorks — dashboard.js ============
-   AI/ML fleet expense analytics:
+/* ============ FleetWorks — analytics.js ============
+   AI Analytics tab inside the Fleet Manager shell:
    - monthly / vehicle-wise / part-wise aggregation
    - fleet-average and industry-average benchmarking
    - expense forecasting (least-squares regression on monthly totals)
    - part-replacement prediction from usage rate + lifespan models
-   Data lives in localStorage ("ff_fleet"); nothing leaves the browser. */
+   Reads the shared `db` global from fleet.js (same ff_fleet store). */
 
 "use strict";
 
 // ---------- Chart palette (validated categorical slots + chrome) ----------
-const PAL = {
+const DASH_PAL = {
   s1: "#2a78d6",        // series 1 (blue)  — "you / actual"
   s1soft: "#9ec5f4",    // lighter step of the same ramp — forecast
   s2: "#1baf7a",        // series 2 (aqua)  — fleet average
@@ -38,23 +38,6 @@ const INDUSTRY = {
   }
 };
 
-// ---------- Data layer ----------
-const STORE_KEY = "ff_fleet";
-
-function loadStore() {
-  try {
-    const d = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-    // spread first: preserves Fleet Manager collections (fuelLogs, issues, ...)
-    return { ...d, vehicles: d.vehicles || [], expenses: d.expenses || [] };
-  } catch { return { vehicles: [], expenses: [] }; }
-}
-function saveStore(d) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(d));
-  if (window.fwCloud) window.fwCloud.push(d);
-}
-
-let db = loadStore();
-
 // ---------- Utilities ----------
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -71,20 +54,8 @@ function monthDiff(a, b) { // b - a in months
 }
 function todayKey() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
 
-function fmtINR(v) {
-  if (v >= 10000000) return "₹" + (v / 10000000).toFixed(1) + "Cr";
-  if (v >= 100000)   return "₹" + (v / 100000).toFixed(1) + "L";
-  if (v >= 1000)     return "₹" + (v / 1000).toFixed(1) + "K";
-  return "₹" + Math.round(v);
-}
 function fmtINRfull(v) { return "₹" + Math.round(v).toLocaleString("en-IN"); }
-function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 function mean(a) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0; }
-function median(a) {
-  if (!a.length) return 0;
-  const s = [...a].sort((x, y) => x - y), m = Math.floor(s.length / 2);
-  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-}
 
 // ---------- ML: least-squares linear regression forecast ----------
 function forecastMonthly(totals, horizon) {
@@ -239,25 +210,6 @@ function legendHTML(items) {
   return items.map(i => `<span class="lg-item"><span class="lg-swatch" style="background:${i.color}"></span>${esc(i.label)}</span>`).join("");
 }
 
-// Shared tooltip
-const tip = () => document.getElementById("vizTooltip");
-function bindTips(container) {
-  container.querySelectorAll("[data-tip]").forEach(el => {
-    el.addEventListener("mousemove", (ev) => {
-      const t = tip();
-      t.innerHTML = el.dataset.tip;
-      t.hidden = false;
-      const pad = 14;
-      let x = ev.clientX + pad, y = ev.clientY + pad;
-      const r = t.getBoundingClientRect();
-      if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - pad;
-      if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - pad;
-      t.style.left = x + "px"; t.style.top = y + "px";
-    });
-    el.addEventListener("mouseleave", () => { tip().hidden = true; });
-  });
-}
-
 // ---------- Render: stat tiles ----------
 function renderStats() {
   const nowK = todayKey();
@@ -274,7 +226,7 @@ function renderStats() {
   document.getElementById("statRow").innerHTML = `
     <div class="stat-tile"><span class="stat-label">Spend this month</span><span class="stat-value">${fmtINR(thisMonth)}</span><span class="stat-sub">${nowK ? monthLabel(nowK) : ""}</span></div>
     <div class="stat-tile"><span class="stat-label">Fleet cost per km</span><span class="stat-value">₹${fleetCpk.toFixed(2)}</span>
-      <span class="stat-sub" style="color:${deltaGood ? "#006300" : PAL.critical}">${deltaGood ? "▼" : "▲"} ${Math.abs(deltaPct).toFixed(0)}% vs industry ₹${indCpk.toFixed(2)}</span></div>
+      <span class="stat-sub" style="color:${deltaGood ? "#006300" : DASH_PAL.critical}">${deltaGood ? "▼" : "▲"} ${Math.abs(deltaPct).toFixed(0)}% vs industry ₹${indCpk.toFixed(2)}</span></div>
     <div class="stat-tile"><span class="stat-label">Forecast, next 3 months</span><span class="stat-value">${fmtINR(fcTotal)}</span><span class="stat-sub">ML regression on your history</span></div>
     <div class="stat-tile"><span class="stat-label">Vehicles tracked</span><span class="stat-value">${db.vehicles.length}</span><span class="stat-sub">${db.expenses.length} expense records</span></div>`;
 }
@@ -298,28 +250,28 @@ function renderMonthly() {
 
   let s = svgEl(W, H);
   ticks.forEach(t => {
-    s += `<line x1="${padL}" y1="${y(t)}" x2="${W - padR}" y2="${y(t)}" stroke="${t === 0 ? PAL.baseline : PAL.grid}" stroke-width="1"/>`;
-    s += `<text x="${padL - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="${PAL.muted}" style="font-variant-numeric:tabular-nums">${fmtINR(t)}</text>`;
+    s += `<line x1="${padL}" y1="${y(t)}" x2="${W - padR}" y2="${y(t)}" stroke="${t === 0 ? DASH_PAL.baseline : DASH_PAL.grid}" stroke-width="1"/>`;
+    s += `<text x="${padL - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="${DASH_PAL.muted}" style="font-variant-numeric:tabular-nums">${fmtINR(t)}</text>`;
   });
   const bw = Math.min(24, slot - 12);
   const maxIdx = all.reduce((mi, d, i) => d.type === "actual" && d.amount > all[mi].amount ? i : mi, 0);
   all.forEach((d, i) => {
     const x = padL + slot * i + (slot - bw) / 2;
-    const fill = d.type === "actual" ? PAL.s1 : PAL.s1soft;
+    const fill = d.type === "actual" ? DASH_PAL.s1 : DASH_PAL.s1soft;
     const tipTxt = `<strong>${monthLabel(d.key)}</strong><br>${d.type === "forecast" ? "Forecast: " : ""}${fmtINRfull(d.amount)}`;
     s += `<path d="${colPath(x, y(d.amount), bw, base)}" fill="${fill}" data-tip="${esc(tipTxt)}"/>`;
     // selective labels: the max actual + each forecast cap
     if (i === maxIdx || d.type === "forecast") {
-      s += `<text x="${x + bw / 2}" y="${y(d.amount) - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${PAL.ink2}">${fmtINR(d.amount)}</text>`;
+      s += `<text x="${x + bw / 2}" y="${y(d.amount) - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${DASH_PAL.ink2}">${fmtINR(d.amount)}</text>`;
     }
     if (i % Math.ceil(all.length / 14) === 0 || d.type === "forecast") {
-      s += `<text x="${x + bw / 2}" y="${H - 12}" text-anchor="middle" font-size="11" fill="${PAL.muted}">${monthLabel(d.key)}</text>`;
+      s += `<text x="${x + bw / 2}" y="${H - 12}" text-anchor="middle" font-size="11" fill="${DASH_PAL.muted}">${monthLabel(d.key)}</text>`;
     }
   });
   s += "</svg>";
   box.innerHTML = s;
   document.getElementById("monthlyLegend").innerHTML = legendHTML([
-    { color: PAL.s1, label: "Actual" }, { color: PAL.s1soft, label: "Forecast (ML)" }
+    { color: DASH_PAL.s1, label: "Actual" }, { color: DASH_PAL.s1soft, label: "Forecast (ML)" }
   ]);
   document.getElementById("monthlyTable").innerHTML =
     "<table><thead><tr><th>Month</th><th>Spend</th><th>Type</th></tr></thead><tbody>" +
@@ -329,7 +281,7 @@ function renderMonthly() {
 }
 
 // ---------- Render: vehicle chart ----------
-function renderVehicles() {
+function renderAnalyticsVehicles() {
   const vs = vehicleStats().filter(v => v.spend > 0);
   const box = document.getElementById("vehicleChart");
   if (!vs.length) { box.innerHTML = "<p class='muted'>No vehicle expenses yet.</p>"; return; }
@@ -346,17 +298,17 @@ function renderVehicles() {
 
   let s = svgEl(W, H);
   ticks.forEach(t => {
-    s += `<line x1="${padL}" y1="${y(t)}" x2="${W - padR}" y2="${y(t)}" stroke="${t === 0 ? PAL.baseline : PAL.grid}" stroke-width="1"/>`;
-    s += `<text x="${padL - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="${PAL.muted}" style="font-variant-numeric:tabular-nums">₹${t.toFixed(t < 3 ? 1 : 0)}</text>`;
+    s += `<line x1="${padL}" y1="${y(t)}" x2="${W - padR}" y2="${y(t)}" stroke="${t === 0 ? DASH_PAL.baseline : DASH_PAL.grid}" stroke-width="1"/>`;
+    s += `<text x="${padL - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="${DASH_PAL.muted}" style="font-variant-numeric:tabular-nums">₹${t.toFixed(t < 3 ? 1 : 0)}</text>`;
   });
   const bw = 20, gap = 2;
   vs.forEach((v, i) => {
     const cx = padL + group * i + group / 2;
     const x0 = cx - (bw * 3 + gap * 2) / 2;
     const bars = [
-      { val: v.costPerKm, color: PAL.s1, name: esc(v.name) },
-      { val: fleetAvg, color: PAL.s2, name: "Fleet average" },
-      { val: v.industry, color: PAL.s3, name: "Industry (" + esc(v.type) + ")" }
+      { val: v.costPerKm, color: DASH_PAL.s1, name: esc(v.name) },
+      { val: fleetAvg, color: DASH_PAL.s2, name: "Fleet average" },
+      { val: v.industry, color: DASH_PAL.s3, name: "Industry (" + esc(v.type) + ")" }
     ];
     bars.forEach((b, j) => {
       const x = x0 + j * (bw + gap);
@@ -364,13 +316,13 @@ function renderVehicles() {
       s += `<path d="${colPath(x, y(b.val), bw, base)}" fill="${b.color}" data-tip="${esc(tipTxt)}"/>`;
     });
     // direct label: this vehicle's own value on its cap
-    s += `<text x="${x0 + bw / 2}" y="${y(v.costPerKm) - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${PAL.ink2}">₹${v.costPerKm.toFixed(2)}</text>`;
-    s += `<text x="${cx}" y="${H - 12}" text-anchor="middle" font-size="11" fill="${PAL.ink2}">${esc(v.name.length > 14 ? v.name.slice(0, 13) + "…" : v.name)}</text>`;
+    s += `<text x="${x0 + bw / 2}" y="${y(v.costPerKm) - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${DASH_PAL.ink2}">₹${v.costPerKm.toFixed(2)}</text>`;
+    s += `<text x="${cx}" y="${H - 12}" text-anchor="middle" font-size="11" fill="${DASH_PAL.ink2}">${esc(v.name.length > 14 ? v.name.slice(0, 13) + "…" : v.name)}</text>`;
   });
   s += "</svg>";
   box.innerHTML = s;
   document.getElementById("vehicleLegend").innerHTML = legendHTML([
-    { color: PAL.s1, label: "This vehicle" }, { color: PAL.s2, label: "Your fleet avg" }, { color: PAL.s3, label: "Industry avg" }
+    { color: DASH_PAL.s1, label: "This vehicle" }, { color: DASH_PAL.s2, label: "Your fleet avg" }, { color: DASH_PAL.s3, label: "Industry avg" }
   ]);
   document.getElementById("vehicleTable").innerHTML =
     "<table><thead><tr><th>Vehicle</th><th>Type</th><th>Spend</th><th>₹/km</th><th>Fleet avg</th><th>Industry</th></tr></thead><tbody>" +
@@ -380,7 +332,7 @@ function renderVehicles() {
 }
 
 // ---------- Render: part chart ----------
-function renderParts() {
+function renderAnalyticsParts() {
   const ps = partStats(filteredExpenses());
   const box = document.getElementById("partChart");
   if (!ps.length) { box.innerHTML = "<p class='muted'>No expenses in this window.</p>"; return; }
@@ -392,14 +344,14 @@ function renderParts() {
   const len = v => (W - padL - padR) * (v / maxV);
 
   let s = svgEl(W, H);
-  s += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - 4}" stroke="${PAL.baseline}" stroke-width="1"/>`;
+  s += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - 4}" stroke="${DASH_PAL.baseline}" stroke-width="1"/>`;
   ps.forEach((p, i) => {
     const yy = padT + rowH * i + (rowH - 20) / 2;
     const tipTxt = `<strong>${esc(p.category)}</strong><br>Total: ${fmtINRfull(p.total)}<br>${p.count} job${p.count > 1 ? "s" : ""} · avg ${fmtINRfull(p.avg)}` +
       (p.industryCost ? `<br>Industry avg/job: ${fmtINRfull(p.industryCost)}` : "");
-    s += `<text x="${padL - 8}" y="${yy + 14}" text-anchor="end" font-size="12" fill="${PAL.ink2}">${esc(p.category)}</text>`;
-    s += `<path d="${barPath(padL, yy, len(p.total), 20)}" fill="${PAL.s1}" data-tip="${esc(tipTxt)}"/>`;
-    s += `<text x="${padL + len(p.total) + 8}" y="${yy + 14}" font-size="11" font-weight="600" fill="${PAL.ink2}" style="font-variant-numeric:tabular-nums">${fmtINR(p.total)}</text>`;
+    s += `<text x="${padL - 8}" y="${yy + 14}" text-anchor="end" font-size="12" fill="${DASH_PAL.ink2}">${esc(p.category)}</text>`;
+    s += `<path d="${barPath(padL, yy, len(p.total), 20)}" fill="${DASH_PAL.s1}" data-tip="${esc(tipTxt)}"/>`;
+    s += `<text x="${padL + len(p.total) + 8}" y="${yy + 14}" font-size="11" font-weight="600" fill="${DASH_PAL.ink2}" style="font-variant-numeric:tabular-nums">${fmtINR(p.total)}</text>`;
   });
   s += "</svg>";
   box.innerHTML = s;
@@ -421,10 +373,10 @@ function renderPredictions() {
   box.innerHTML = preds.map(p => {
     const pct = Math.min(p.lifeUsed * 100, 100);
     let status, color;
-    if (p.lifeUsed >= 1)        { status = "Overdue";  color = PAL.critical; }
-    else if (p.lifeUsed >= 0.85){ status = "Due soon"; color = PAL.serious; }
-    else if (p.lifeUsed >= 0.6) { status = "Plan ahead"; color = PAL.warn; }
-    else                        { status = "Healthy";  color = PAL.good; }
+    if (p.lifeUsed >= 1)        { status = "Overdue";  color = DASH_PAL.critical; }
+    else if (p.lifeUsed >= 0.85){ status = "Due soon"; color = DASH_PAL.serious; }
+    else if (p.lifeUsed >= 0.6) { status = "Plan ahead"; color = DASH_PAL.warn; }
+    else                        { status = "Healthy";  color = DASH_PAL.good; }
     const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};vertical-align:1px"></span>`;
     const due = p.lifeUsed >= 1 ? "now" :
       "~" + p.dueDate.toLocaleDateString("en-IN", { month: "short", year: "numeric" }) +
@@ -445,72 +397,6 @@ function renderPredictions() {
   }).join("");
 }
 
-// ---------- Demo data (deterministic) ----------
-function mulberry32(a) {
-  return function () {
-    a |= 0; a = (a + 0x6D2B79F5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function loadDemo() {
-  const rnd = mulberry32(42);
-  const vehicles = [
-    { id: "v1", name: "TN-01-AB-1234", type: "Truck (HCV)", kmPerMonth: 9000 },
-    { id: "v2", name: "TN-09-CD-5678", type: "Truck (HCV)", kmPerMonth: 7500 },
-    { id: "v3", name: "TN-22-EF-3456", type: "Tipper", kmPerMonth: 4200 },
-    { id: "v4", name: "KA-05-GH-7890", type: "Bus", kmPerMonth: 11000 },
-    { id: "v5", name: "TN-45-JK-2468", type: "LCV", kmPerMonth: 5200 }
-  ];
-  const expenses = [];
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth() - 17, 1);
-
-  const partPlans = {
-    "Engine Oil & Filters": { every: 2, cost: [7000, 10500], jitter: 1 },
-    "Brakes":               { every: 7, cost: [7500, 12000], jitter: 2 },
-    "Tyres":                { every: 9, cost: [52000, 78000], jitter: 3 },
-    "Battery":              { every: 13, cost: [11500, 16500], jitter: 3 },
-    "Electrical":           { every: 6, cost: [2500, 8000], jitter: 2 },
-    "Suspension":           { every: 10, cost: [9000, 19000], jitter: 3 },
-    "Clutch":               { every: 15, cost: [18000, 26000], jitter: 3 }
-  };
-
-  vehicles.forEach((v, vi) => {
-    Object.entries(partPlans).forEach(([cat, plan]) => {
-      let m = Math.floor(rnd() * plan.every); // random phase
-      while (m < 18) {
-        const d = new Date(start.getFullYear(), start.getMonth() + m, 3 + Math.floor(rnd() * 24));
-        if (d <= now) {
-          const scale = v.type === "LCV" ? 0.55 : v.type === "Tipper" ? 1.15 : 1;
-          const amount = Math.round((plan.cost[0] + rnd() * (plan.cost[1] - plan.cost[0])) * scale / 100) * 100;
-          expenses.push({
-            vehicleId: v.id, date: d.toISOString().slice(0, 10),
-            category: cat, amount
-          });
-        }
-        m += plan.every + Math.floor(rnd() * plan.jitter);
-      }
-    });
-    // occasional misc jobs
-    for (let m = 0; m < 18; m++) {
-      if (rnd() < 0.25) {
-        const d = new Date(start.getFullYear(), start.getMonth() + m, 5 + Math.floor(rnd() * 20));
-        if (d <= now) expenses.push({
-          vehicleId: v.id, date: d.toISOString().slice(0, 10),
-          category: "Other", amount: Math.round((1500 + rnd() * 6000) / 100) * 100
-        });
-      }
-    }
-  });
-
-  db = { ...db, vehicles, expenses, demo: true };
-  saveStore(db);
-  renderAll();
-}
-
 // ---------- Tally export (GST & accounting) ----------
 // Generates Tally-importable XML (Tally Prime / ERP 9): one Payment voucher
 // per expense, debiting a "Vehicle Maintenance - <category>" expense ledger
@@ -522,7 +408,6 @@ function xmlEsc(s) {
 }
 function exportTally() {
   if (!db.expenses.length) { alert("No expenses to export yet."); return; }
-  const vName = id => { const v = db.vehicles.find(x => x.id === id); return v ? v.name : "Unknown vehicle"; };
   const cats = [...new Set(db.expenses.map(e => e.category))];
 
   const ledgers = cats.map(c => `
@@ -582,69 +467,23 @@ function exportTally() {
   URL.revokeObjectURL(a.href);
 }
 
-// ---------- Data management ----------
-function exportData() {
-  const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "fleetworks-data.json";
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function clearData() {
-  if (!confirm("Delete all fleet data stored in this browser?")) return;
-  db = { vehicles: [], expenses: [] };
-  localStorage.removeItem(STORE_KEY);
-  renderAll();
-}
+// ---------- Filters & orchestration ----------
+function renderCharts() { renderMonthly(); renderAnalyticsVehicles(); renderAnalyticsParts(); }
 
-// ---------- Forms & filters ----------
-document.getElementById("vehicleForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const fd = Object.fromEntries(new FormData(e.target));
-  db.vehicles.push({ id: "v" + Date.now(), name: fd.name.trim(), type: fd.type, kmPerMonth: +fd.kmPerMonth });
-  saveStore(db); e.target.reset(); renderAll();
-});
-document.getElementById("expenseForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const fd = Object.fromEntries(new FormData(e.target));
-  db.expenses.push({
-    vehicleId: fd.vehicleId, date: fd.date, category: fd.category,
-    amount: +fd.amount, odo: fd.odo ? +fd.odo : undefined
-  });
-  saveStore(db); e.target.reset(); renderAll();
-});
-document.getElementById("vehicleFilter").addEventListener("change", renderCharts);
-document.getElementById("periodFilter").addEventListener("change", renderCharts);
-document.getElementById("demoBtn").addEventListener("click", loadDemo);
-
-// ---------- Navbar ----------
-const navbar = document.getElementById("navbar");
-window.addEventListener("scroll", () => navbar.classList.toggle("scrolled", window.scrollY > 10));
-document.getElementById("hamburger").addEventListener("click", () =>
-  document.getElementById("navLinks").classList.toggle("open"));
-
-// ---------- Render orchestration ----------
-function renderCharts() { renderMonthly(); renderVehicles(); renderParts(); }
-
-function renderAll() {
-  const has = db.vehicles.length > 0;
-  document.getElementById("emptyState").hidden = has;
-  document.getElementById("dashContent").hidden = !has;
-  if (!has) return;
-
-  // vehicle selectors
+function renderAnalyticsAll() {
+  // vehicle filter (preserve selection across refreshes)
   const vf = document.getElementById("vehicleFilter");
   const keep = vf.value;
   vf.innerHTML = '<option value="all">All vehicles</option>' +
     db.vehicles.map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join("");
   if ([...vf.options].some(o => o.value === keep)) vf.value = keep;
-  document.getElementById("expenseVehicle").innerHTML =
-    db.vehicles.map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join("");
 
   renderStats();
   renderCharts();
   renderPredictions();
 }
 
-renderAll();
+document.getElementById("vehicleFilter").addEventListener("change", renderCharts);
+document.getElementById("periodFilter").addEventListener("change", renderCharts);
+
+renderAnalyticsAll();

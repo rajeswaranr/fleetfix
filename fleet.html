@@ -107,19 +107,19 @@
         <div class="side-group has-children open">
           <button type="button" class="side-parent"><i data-icon="chartBar"></i><span>Reports</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
           <div class="side-children">
-            <a class="side-item" href="dashboard.html"><span>AI Analytics</span></a>
+            <button class="side-item tab-btn" data-tab="analytics"><span>AI Analytics</span></button>
             <button class="side-item tab-btn" data-tab="reports"><span>Standard Reports</span></button>
           </div>
         </div>
 
         <div class="side-sep"></div>
+        <button class="side-item tab-btn" data-tab="account"><i data-icon="driver"></i><span>My Account</span></button>
         <button class="side-item tab-btn" data-tab="settings"><i data-icon="settings"></i><span>Settings</span></button>
         <a class="side-item" href="tel:+919740799722"><i data-icon="phone"></i><span>Help &amp; Support</span></a>
       </nav>
       <div class="side-foot">
-        <div class="side-plan">
+        <div class="side-plan" id="authPill">
           <span class="side-plan-t">15-Day Free Trial</span>
-          <a class="btn btn-primary btn-sm btn-block" href="my.html">Create Account</a>
         </div>
         <a href="index.html" class="side-foot-link">&larr; Back to site</a>
       </div>
@@ -145,8 +145,9 @@
         <div id="emptyState" class="empty-state" hidden>
           <div class="empty-icon"><i data-icon="truck" data-icon-size="46"></i></div>
           <h2>No fleet data yet</h2>
-          <p>Load the demo fleet to explore compliance, fuel, inspections, issues and the AI Copilot — or add your vehicles in the AI Dashboard first.</p>
+          <p>Load the demo fleet to explore compliance, fuel, inspections, issues and the AI Copilot — or sign in and add your vehicles in My Account.</p>
           <button class="btn btn-primary" onclick="loadDemoFleet()">Load Demo Fleet</button>
+          <button class="btn btn-outline" onclick="document.querySelector('#tabBar .tab-btn[data-tab=account]').click()">My Account</button>
         </div>
 
         <div id="fleetContent" hidden>
@@ -651,6 +652,258 @@
           <p class="muted" style="margin-top:12px">Export downloads a full copy of your fleet data to your device. Clearing demo data removes the sample fleet only — your own records are kept.</p>
         </div>
       </section>
+
+      <!-- ======= AI ANALYTICS (merged from dashboard.html) ======= -->
+      <section class="tab-panel" id="tab-analytics">
+        <section class="stat-row" id="statRow" aria-label="Key figures"></section>
+
+        <div class="dash-filters">
+          <label>Vehicle
+            <select id="vehicleFilter"><option value="all">All vehicles</option></select>
+          </label>
+          <label>Period
+            <select id="periodFilter">
+              <option value="6">Last 6 months</option>
+              <option value="12" selected>Last 12 months</option>
+              <option value="24">Last 24 months</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-outline btn-sm" onclick="exportTally()" style="margin-left:auto"><i data-icon="receipt" data-icon-size="15"></i> Export to Tally (GST)</button>
+        </div>
+
+        <section class="chart-card">
+          <div class="chart-head">
+            <div>
+              <h2>Monthly Expenses</h2>
+              <p class="muted">Actual spend by month, with ML forecast for the next 3 months</p>
+            </div>
+            <div class="chart-legend" id="monthlyLegend"></div>
+          </div>
+          <div class="chart-scroll"><div id="monthlyChart" class="chart-area"></div></div>
+          <details class="chart-table"><summary>View as table</summary><div id="monthlyTable"></div></details>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-head">
+            <div>
+              <h2>Vehicle-wise Cost per KM</h2>
+              <p class="muted">Each vehicle vs your fleet average vs industry average for its class</p>
+            </div>
+            <div class="chart-legend" id="vehicleLegend"></div>
+          </div>
+          <div class="chart-scroll"><div id="vehicleChart" class="chart-area"></div></div>
+          <details class="chart-table"><summary>View as table</summary><div id="vehicleTable"></div></details>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-head">
+            <div>
+              <h2>Part-wise Spend</h2>
+              <p class="muted">Where the money goes, with your average part cost vs industry</p>
+            </div>
+          </div>
+          <div class="chart-scroll"><div id="partChart" class="chart-area"></div></div>
+          <details class="chart-table"><summary>View as table</summary><div id="partTable"></div></details>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-head">
+            <div>
+              <h2 class="head-ic"><span class="ic-tile brand"><i data-icon="trendUp" data-icon-size="22"></i></span> Predicted Upcoming Expenses</h2>
+              <p class="muted">ML predictions from your service history, usage rate and part lifespan models</p>
+            </div>
+          </div>
+          <div id="predictions" class="predictions"></div>
+          <p class="disclaimer">Predictions blend your fleet's observed replacement intervals with indicative industry lifespan data. Actual wear varies with terrain, load and driving style.</p>
+        </section>
+      </section>
+
+      <!-- ======= MY ACCOUNT (merged from my.html) ======= -->
+      <section class="tab-panel" id="tab-account">
+
+        <!-- Signed out -->
+        <div id="authView" hidden>
+          <div class="dash-hero" style="border-radius:var(--radius);padding:36px 30px;margin-bottom:24px">
+            <span class="badge"><i data-icon="truck" data-icon-size="14"></i> For Transport Owners</span>
+            <h1 style="font-size:clamp(1.5rem,3vw,2.2rem)">My <span class="accent">FleetWorks</span></h1>
+            <p>One account for your whole fleet. Add diesel, expenses and problems in seconds — FleetWorks AI turns them into savings, predictions and Tally-ready accounts. Works on phone and computer, data always backed up.</p>
+          </div>
+          <div class="onboard-card" style="max-width:440px;margin:0 auto">
+            <h2 style="color:var(--navy);font-size:1.2rem;margin-bottom:4px" id="authTitle">Owner Sign In</h2>
+            <p class="muted" style="margin-bottom:16px">Free account · takes 30 seconds</p>
+            <form id="authForm" class="entry-form">
+              <div id="signupOnlyFields" hidden>
+                <label>Your Name
+                  <input type="text" name="fullName" placeholder="e.g. Rajesh Kumar" autocomplete="name" />
+                </label>
+                <label>Transport / Company Name
+                  <input type="text" name="transportName" placeholder="e.g. Sri Balaji Transports" autocomplete="organization" />
+                </label>
+                <label>GST Number or PAN
+                  <input type="text" name="gstPan" placeholder="e.g. 33ABCDE1234F1Z5 or ABCDE1234F" maxlength="15" style="text-transform:uppercase" autocomplete="off" />
+                  <span class="field-hint">Used to verify your business. GSTIN (15 chars) or PAN (10 chars).</span>
+                </label>
+                <label>Mobile Number
+                  <input type="tel" name="mobile" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric" autocomplete="tel" />
+                </label>
+                <label>Number of Vehicles in Your Fleet
+                  <input type="number" name="fleetSize" placeholder="e.g. 5" min="1" max="9999" inputmode="numeric" />
+                </label>
+              </div>
+              <label>Email
+                <input type="email" name="email" placeholder="you@example.com" required autocomplete="username" />
+              </label>
+              <label>Password
+                <input type="password" name="password" placeholder="Minimum 6 characters" required autocomplete="current-password" />
+              </label>
+              <button type="submit" class="btn btn-primary btn-block" id="authSubmit">Sign In</button>
+              <button type="button" class="btn btn-outline btn-block" id="authToggle">New owner? Create free account</button>
+              <p class="field-error" id="authErr" hidden></p>
+              <p class="muted" id="authNote" style="font-size:0.78rem" hidden></p>
+            </form>
+
+            <!-- Email-confirmation panel (shown after Create Account) -->
+            <div id="authConfirm" class="auth-confirm" hidden>
+              <span class="auth-confirm-ic"><i data-icon="mailCheck" data-icon-size="30"></i></span>
+              <h2>Check your email to activate</h2>
+              <p>We've sent an activation link to <strong id="confirmEmail"></strong>. Click it to activate your FleetWorks account, then come back here and sign in.</p>
+              <p class="muted auth-confirm-hint">Didn't get it within a minute? Check your spam folder, or <button type="button" class="link-btn" id="resendConfirm">resend the link</button>.</p>
+              <p class="muted" id="resendNote" hidden></p>
+              <button type="button" class="btn btn-outline btn-block" id="backToSignIn">Back to Sign In</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signed in -->
+        <div id="portalView" hidden>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+            <div>
+              <h1 style="color:var(--navy);font-size:1.5rem">Welcome back, <span id="ownerName">Owner</span></h1>
+              <p class="muted" style="font-size:0.85rem">Your entries sync to the cloud automatically. <span id="syncState"></span></p>
+            </div>
+            <button class="btn btn-outline btn-sm" id="accLogoutBtn">Sign Out</button>
+          </div>
+
+          <section class="stat-row" id="ownerStats" style="margin-bottom:18px"></section>
+
+          <!-- Entry type tabs -->
+          <div class="tab-bar" id="entryTabs">
+            <button class="tab-btn active" data-tab="fuel"><i data-icon="fuel" data-icon-size="16"></i> Diesel</button>
+            <button class="tab-btn" data-tab="expense"><i data-icon="receipt" data-icon-size="16"></i> Expense</button>
+            <button class="tab-btn" data-tab="issue"><i data-icon="alert" data-icon-size="16"></i> Problem</button>
+            <button class="tab-btn" data-tab="vehicle"><i data-icon="truck" data-icon-size="16"></i> Vehicle</button>
+          </div>
+
+          <!-- Diesel -->
+          <section class="tab-panel active" id="qe-fuel">
+            <div class="chart-card">
+              <div class="chart-head"><div><h2>Add Diesel Fill</h2><p class="muted">Litres + odometer = FleetWorks computes your mileage automatically</p></div></div>
+              <div class="veh-chips" id="qeFuelChips"></div>
+              <form id="qeFuelForm" class="entry-form">
+                <div class="form-row">
+                  <label>Litres
+                    <input type="number" name="litres" step="0.01" min="1" placeholder="e.g. 180" required inputmode="decimal" />
+                  </label>
+                  <label>Total Amount (₹)
+                    <input type="number" name="amount" min="1" placeholder="e.g. 16400" required inputmode="numeric" />
+                  </label>
+                </div>
+                <div class="form-row">
+                  <label>Odometer (km)
+                    <input type="number" name="odo" min="0" placeholder="meter reading" required inputmode="numeric" />
+                  </label>
+                  <label>Date
+                    <input type="date" name="date" required />
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i data-icon="fuel" data-icon-size="16"></i> Save Diesel Entry</button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Expense -->
+          <section class="tab-panel" id="qe-expense">
+            <div class="chart-card">
+              <div class="chart-head"><div><h2>Add Expense</h2><p class="muted">Every entry strengthens your AI predictions and Tally export</p></div></div>
+              <div class="veh-chips" id="qeExpChips"></div>
+              <form id="qeExpForm" class="entry-form">
+                <div class="form-row">
+                  <label>What was it for?
+                    <select name="category" required>
+                      <option value="">Select</option>
+                      <option>Tyres</option><option>Battery</option><option>Brakes</option>
+                      <option>Clutch</option><option>Engine Oil &amp; Filters</option><option>Suspension</option>
+                      <option>Electrical</option><option>Body &amp; Paint</option><option>Other</option>
+                    </select>
+                  </label>
+                  <label>Amount (₹)
+                    <input type="number" name="amount" min="1" placeholder="e.g. 12500" required inputmode="numeric" />
+                  </label>
+                </div>
+                <div class="form-row">
+                  <label>Date
+                    <input type="date" name="date" required />
+                  </label>
+                  <label>Odometer (km, optional)
+                    <input type="number" name="odo" min="0" placeholder="meter reading" inputmode="numeric" />
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i data-icon="receipt" data-icon-size="16"></i> Save Expense</button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Issue -->
+          <section class="tab-panel" id="qe-issue">
+            <div class="chart-card">
+              <div class="chart-head"><div><h2>Report a Problem</h2><p class="muted">Foresight AI will prioritise it; convert to a job card in Service</p></div></div>
+              <div class="veh-chips" id="qeIssChips"></div>
+              <form id="qeIssForm" class="entry-form">
+                <label>What's wrong?
+                  <input type="text" name="title" placeholder="e.g. Brake pedal spongy, engine overheating..." required />
+                </label>
+                <label>How serious?
+                  <select name="severity" required>
+                    <option>Low</option><option selected>Medium</option><option>High</option>
+                  </select>
+                </label>
+                <button type="submit" class="btn btn-primary btn-block"><i data-icon="alert" data-icon-size="16"></i> Report Problem</button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Vehicle -->
+          <section class="tab-panel" id="qe-vehicle">
+            <div class="chart-card">
+              <div class="chart-head"><div><h2>Add a Vehicle</h2></div></div>
+              <form id="qeVehForm" class="entry-form">
+                <label>Vehicle Number
+                  <input type="text" name="name" placeholder="e.g. TN-01-AB-1234" required style="text-transform:uppercase" />
+                </label>
+                <div class="form-row">
+                  <label>Type
+                    <select name="type" required>
+                      <option value="">Select</option>
+                      <option>Truck (HCV)</option><option>LCV</option><option>Bus</option>
+                      <option>Tipper</option><option>Trailer</option><option>Tanker</option>
+                    </select>
+                  </label>
+                  <label>Monthly Running (km)
+                    <input type="number" name="kmPerMonth" min="100" placeholder="e.g. 8000" required inputmode="numeric" />
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i data-icon="plus" data-icon-size="16"></i> Add Vehicle</button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Recent entries -->
+          <div class="chart-card">
+            <div class="chart-head"><div><h2>Recent Entries</h2></div></div>
+            <div id="recentList" class="predictions"></div>
+          </div>
+        </div>
+      </section>
         </div>
 
         <div id="vizTooltip" class="viz-tooltip" hidden></div>
@@ -660,11 +913,18 @@
 
   <script src="js/icons.js"></script>
   <script src="js/backend.js"></script>
-  <script src="js/fleet.js"></script>
-  <script src="js/copilot.js"></script>
   <script src="js/cloudstore.js"></script>
+  <script src="js/fleet.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/copilot.js"></script>
   <script>
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+    // Deep-link: fleet.html#analytics / #account / #fuel ... activates that tab
+    (function () {
+      const t = location.hash.slice(1);
+      if (t) document.querySelector('#tabBar .tab-btn[data-tab="' + t + '"]')?.click();
+    })();
   </script>
 </body>
 </html>

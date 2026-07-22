@@ -1,30 +1,12 @@
-/* ============ FleetWorks — my.js ============
-   Owner portal: sign in / create account (via fwCloud from
-   cloudstore.js), then quick entry of diesel fills, expenses,
-   problems and vehicles into the shared ff_fleet store. */
+/* ============ FleetWorks — account.js ============
+   My Account tab inside the Fleet Manager shell: sign in / create
+   account (via fwCloud from cloudstore.js), then quick entry of
+   diesel fills, expenses, problems and vehicles into the shared
+   `db` global from fleet.js. */
 
 "use strict";
 
-const STORE_KEY = "ff_fleet";
-function loadStore() {
-  try {
-    const d = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-    return { ...d, vehicles: d.vehicles || [], expenses: d.expenses || [], fuelLogs: d.fuelLogs || [], issues: d.issues || [] };
-  } catch { return { vehicles: [], expenses: [], fuelLogs: [], issues: [] }; }
-}
-function saveStore() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(db));
-  if (window.fwCloud) window.fwCloud.push(db);
-  document.getElementById("syncState").textContent = "Last saved " + new Date().toLocaleTimeString("en-IN") + " ✓";
-}
-let db = loadStore();
 let selVehicle = null;
-
-const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const fmtINR = v => v >= 100000 ? "₹" + (v / 100000).toFixed(1) + "L" : v >= 1000 ? "₹" + (v / 1000).toFixed(1) + "K" : "₹" + Math.round(v);
-const fmtDate = d => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
-const vName = id => (db.vehicles.find(v => v.id === id) || { name: "?" }).name;
-const uid = () => "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const today = () => new Date().toISOString().slice(0, 10);
 
 // ---------- Auth views ----------
@@ -34,15 +16,34 @@ function ownerDisplayName() {
   const user = window.fwCloud && fwCloud.user();
   return (p && p.full_name) || (user ? user.split("@")[0] : "Owner");
 }
+
+function updateAuthPill() {
+  const pill = document.getElementById("authPill");
+  if (!pill) return;
+  const user = window.fwCloud && fwCloud.user();
+  pill.innerHTML = user
+    ? `<span class="side-plan-t">${esc(ownerDisplayName())}</span>
+       <button type="button" class="btn btn-outline btn-sm btn-block" id="pillLogout">Sign Out</button>`
+    : `<span class="side-plan-t">15-Day Free Trial</span>
+       <button type="button" class="btn btn-primary btn-sm btn-block" id="pillSignIn">Sign In / Create Account</button>`;
+  document.getElementById("pillSignIn")?.addEventListener("click", () =>
+    document.querySelector('#tabBar .tab-btn[data-tab="account"]')?.click());
+  document.getElementById("pillLogout")?.addEventListener("click", doLogout);
+}
+
+function doLogout() {
+  if (confirm("Sign out? Your data stays safely in the cloud.")) fwCloud.logout();
+}
+
 function renderAuthState() {
   const user = window.fwCloud && fwCloud.user();
   document.getElementById("authView").hidden = !!user;
   document.getElementById("portalView").hidden = !user;
-  document.getElementById("authTopBtn").textContent = user ? ownerDisplayName() : "Sign In";
   if (user) {
     document.getElementById("ownerName").textContent = ownerDisplayName();
-    renderPortal();
+    renderAccountPortal();
   }
+  updateAuthPill();
 }
 
 const signupFields = document.getElementById("signupOnlyFields");
@@ -109,21 +110,15 @@ document.getElementById("resendConfirm").addEventListener("click", async () => {
   catch (ex) { rn.textContent = ex.message; }
 });
 
-document.getElementById("authTopBtn").addEventListener("click", () => {
-  if (fwCloud.user()) window.scrollTo({ top: 0, behavior: "smooth" });
-  else document.querySelector("#authForm input").focus();
-});
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  if (confirm("Sign out? Your data stays safely in the cloud.")) fwCloud.logout();
-});
+document.getElementById("accLogoutBtn").addEventListener("click", doLogout);
 
 // ---------- Vehicle chips ----------
 function renderChips() {
   const chips = db.vehicles.map(v =>
     `<button type="button" class="vchip ${selVehicle === v.id ? "sel" : ""}" data-vid="${v.id}">${FWIcon("truck", { size: 14 })} ${esc(v.name)}</button>`).join("") +
     (db.vehicles.length ? "" : `<p class="muted">No vehicles yet — add one in the Vehicle tab first.</p>`);
-  ["fuelChips", "expChips", "issChips"].forEach(id => document.getElementById(id).innerHTML = chips);
-  document.querySelectorAll(".vchip").forEach(b => b.addEventListener("click", () => {
+  ["qeFuelChips", "qeExpChips", "qeIssChips"].forEach(id => document.getElementById(id).innerHTML = chips);
+  document.querySelectorAll("#tab-account .vchip").forEach(b => b.addEventListener("click", () => {
     selVehicle = b.dataset.vid;
     renderChips();
   }));
@@ -134,8 +129,13 @@ function needVehicle() {
   return false;
 }
 
+function markSynced() {
+  const el = document.getElementById("syncState");
+  if (el) el.textContent = "Last saved " + new Date().toLocaleTimeString("en-IN") + " ✓";
+}
+
 // ---------- Stats + recent ----------
-function renderPortal() {
+function renderAccountPortal() {
   const nowM = today().slice(0, 7);
   const monthSpend = db.expenses.filter(e => e.date.slice(0, 7) === nowM).reduce((s, e) => s + e.amount, 0) +
     db.fuelLogs.filter(f => f.date.slice(0, 7) === nowM).reduce((s, f) => s + f.amount, 0);
@@ -148,7 +148,7 @@ function renderPortal() {
   if (!selVehicle && db.vehicles.length) selVehicle = db.vehicles[0].id;
   renderChips();
   renderRecent();
-  document.querySelectorAll('input[name="date"]').forEach(i => { if (!i.value) i.value = today(); });
+  document.querySelectorAll('#tab-account input[name="date"]').forEach(i => { if (!i.value) i.value = today(); });
 }
 
 function renderRecent() {
@@ -168,48 +168,49 @@ document.getElementById("entryTabs").addEventListener("click", e => {
   const btn = e.target.closest(".tab-btn");
   if (!btn || !btn.dataset.tab) return;
   document.querySelectorAll("#entryTabs .tab-btn").forEach(b => b.classList.toggle("active", b === btn));
-  document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === "tab-" + btn.dataset.tab));
+  document.querySelectorAll("#tab-account .tab-panel").forEach(p => p.classList.toggle("active", p.id === "qe-" + btn.dataset.tab));
 });
 
-document.getElementById("vehForm").addEventListener("submit", e => {
+function afterQuickSave(form) {
+  saveStore();
+  markSynced();
+  form.reset();
+  renderAll();
+}
+
+document.getElementById("qeVehForm").addEventListener("submit", e => {
   e.preventDefault();
   const fd = Object.fromEntries(new FormData(e.target));
   const v = { id: "v" + Date.now(), name: fd.name.trim().toUpperCase(), type: fd.type, kmPerMonth: +fd.kmPerMonth };
   db.vehicles.push(v);
   selVehicle = v.id;
-  saveStore(); e.target.reset(); renderPortal();
+  afterQuickSave(e.target);
   alert(`${v.name} added! Now add its diesel and expense entries — FleetWorks AI starts learning immediately.`);
 });
 
-document.getElementById("fuelForm").addEventListener("submit", e => {
+document.getElementById("qeFuelForm").addEventListener("submit", e => {
   e.preventDefault();
   if (needVehicle()) return;
   const fd = Object.fromEntries(new FormData(e.target));
   db.fuelLogs = db.fuelLogs || [];
   db.fuelLogs.push({ id: uid(), vehicleId: selVehicle, date: fd.date, litres: +fd.litres, amount: +fd.amount, odo: +fd.odo });
-  saveStore(); e.target.reset(); renderPortal();
+  afterQuickSave(e.target);
 });
 
-document.getElementById("expForm").addEventListener("submit", e => {
+document.getElementById("qeExpForm").addEventListener("submit", e => {
   e.preventDefault();
   if (needVehicle()) return;
   const fd = Object.fromEntries(new FormData(e.target));
   db.expenses.push({ vehicleId: selVehicle, date: fd.date, category: fd.category, amount: +fd.amount, odo: fd.odo ? +fd.odo : undefined });
-  saveStore(); e.target.reset(); renderPortal();
+  afterQuickSave(e.target);
 });
 
-document.getElementById("issForm").addEventListener("submit", e => {
+document.getElementById("qeIssForm").addEventListener("submit", e => {
   e.preventDefault();
   if (needVehicle()) return;
   const fd = Object.fromEntries(new FormData(e.target));
   db.issues.push({ id: uid(), vehicleId: selVehicle, title: fd.title.trim(), severity: fd.severity, status: "Open", createdAt: today(), source: "Owner portal" });
-  saveStore(); e.target.reset(); renderPortal();
+  afterQuickSave(e.target);
 });
-
-// ---------- Navbar ----------
-const navbar = document.getElementById("navbar");
-window.addEventListener("scroll", () => navbar.classList.toggle("scrolled", window.scrollY > 10));
-document.getElementById("hamburger").addEventListener("click", () =>
-  document.getElementById("navLinks").classList.toggle("open"));
 
 renderAuthState();

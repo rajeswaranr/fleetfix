@@ -1138,13 +1138,22 @@ document.getElementById("tabBar").addEventListener("click", e => {
   if (!btn || !btn.dataset.tab) return;
   // Radar presets (Vehicle/Driver Renewals, Warranties) pre-filter the Radar
   if (btn.dataset.radar !== undefined) { radarFilter = btn.dataset.radar || "all"; renderRadar(); }
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b === btn));
-  document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === "tab-" + btn.dataset.tab));
+  // scoped to the sidebar / top-level panels so the My Account inner tabs are untouched
+  document.querySelectorAll("#tabBar .tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+  document.querySelectorAll("#fleetContent > .tab-panel").forEach(p => p.classList.toggle("active", p.id === "tab-" + btn.dataset.tab));
   const title = document.getElementById("pageTitle");
   if (title) title.textContent = (btn.textContent || "").trim();
   document.getElementById("appSide")?.classList.remove("open");
   clearPageSearch();
   updateToolbarCounts();
+  history.replaceState(null, "", "#" + btn.dataset.tab);
+  // My Account works even with an empty fleet (that's where you sign in / add data)
+  if (!db.vehicles.length) {
+    const exempt = btn.dataset.tab === "account";
+    document.getElementById("emptyState").hidden = exempt;
+    document.getElementById("fleetContent").hidden = !exempt;
+  }
+  if (btn.dataset.tab === "account" && window.renderAuthState) renderAuthState();
 });
 
 // ---------- Top-bar page search (filters the active panel's lists) ----------
@@ -1464,6 +1473,8 @@ function renderAll() {
   renderAssignments(); renderMeters(); renderExpenseHistory(); renderReplacement();
   renderItemFailures(); renderForms(); renderServiceHistory(); renderServiceTasks();
   renderVendors(); renderIntegrations(); renderReports();
+  if (window.renderAnalyticsAll) renderAnalyticsAll();
+  if (window.renderAccountPortal) renderAccountPortal();
   const org = document.getElementById("topOrg");
   if (org) org.textContent = (db.settings && db.settings.businessName) || "My Fleet";
   updateToolbarCounts();
