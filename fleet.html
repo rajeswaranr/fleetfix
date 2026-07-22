@@ -13,74 +13,72 @@
   <link rel="icon" type="image/png" href="icons/icon-96.png" />
   <meta name="theme-color" content="#0f1e33" />
 </head>
-<body>
+<body class="app-body">
 
-  <!-- ======= TOP BAR ======= -->
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <span>🛞 24x7 Breakdown Helpline: <a href="tel:+919740799722"><strong>+91 97407 99722</strong></a></span>
-      <span class="topbar-cities ai-glow">🇮🇳 India's First AI/ML Vehicle Maintenance &amp; Management System</span>
-    </div>
-  </div>
-
-  <!-- ======= NAVBAR ======= -->
-  <header class="navbar" id="navbar">
-    <div class="container nav-inner">
-      <a href="index.html" class="logo">
-        <img src="assets/logo-mark.svg" width="34" height="34" alt="" style="display:block" />
-        <span>Fleet<em>Works</em></span>
-      </a>
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html#services">Services</a>
-        <a href="why.html">Why FleetWorks</a>
-        <a href="my.html">My FleetWorks</a>
-        <a href="dashboard.html">AI Dashboard</a>
-        <a href="fleet.html" class="nav-partner">Fleet Manager</a>        <a href="partner.html">Become a Partner</a>
+  <div class="app-shell">
+    <!-- ======= SIDEBAR ======= -->
+    <aside class="app-side" id="appSide">
+      <div class="side-head">
+        <a href="index.html" class="side-logo">
+          <img src="assets/logo-mark.svg" width="30" height="30" alt="" />
+          <span>Fleet<em>Works</em></span>
+        </a>
+        <button class="side-close" id="sideClose" aria-label="Close menu">&times;</button>
+      </div>
+      <nav class="side-nav" id="tabBar">
+        <div class="side-group">
+          <span class="side-label">Overview</span>
+          <button class="side-item tab-btn active" data-tab="overview"><i data-icon="brain"></i><span>Foresight AI</span></button>
+        </div>
+        <div class="side-group">
+          <span class="side-label">Fleet</span>
+          <button class="side-item tab-btn" data-tab="vehicles"><i data-icon="truck"></i><span>Vehicles &amp; RTO</span></button>
+          <button class="side-item tab-btn" data-tab="drivers"><i data-icon="driver"></i><span>Drivers</span></button>
+          <button class="side-item tab-btn" data-tab="documents"><i data-icon="document"></i><span>Documents</span></button>
+          <button class="side-item tab-btn" data-tab="tyres"><i data-icon="tire"></i><span>Tyre Health</span></button>
+        </div>
+        <div class="side-group">
+          <span class="side-label">Operations</span>
+          <button class="side-item tab-btn" data-tab="fuel"><i data-icon="fuel"></i><span>Diesel &amp; Mileage</span></button>
+          <button class="side-item tab-btn" data-tab="inspections"><i data-icon="clipboardCheck"></i><span>Inspections</span></button>
+          <button class="side-item tab-btn" data-tab="issues"><i data-icon="wrench"></i><span>Issues &amp; Job Cards</span></button>
+          <button class="side-item tab-btn" data-tab="reminders"><i data-icon="calendarClock"></i><span>Maintenance</span></button>
+          <button class="side-item tab-btn" data-tab="parts"><i data-icon="boxes"></i><span>Spares Godown</span></button>
+        </div>
+        <div class="side-group">
+          <span class="side-label">Compliance</span>
+          <button class="side-item tab-btn" data-tab="radar"><i data-icon="shieldCheck"></i><span>Compliance Radar</span></button>
+        </div>
+        <div class="side-group">
+          <span class="side-label">Account</span>
+          <button class="side-item tab-btn" data-tab="settings"><i data-icon="settings"></i><span>Settings</span></button>
+        </div>
       </nav>
-      <div class="nav-actions">
-        <a href="tel:+919740799722" class="btn btn-outline btn-sm">Call Us</a>
-        <button class="btn btn-primary btn-sm" id="demoBtn">Load Demo Fleet</button>
-        <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <div class="side-foot">
+        <a href="index.html" class="side-foot-link">&larr; Back to site</a>
       </div>
-    </div>
-  </header>
+    </aside>
 
-  <!-- ======= HERO ======= -->
-  <section class="dash-hero">
-    <div class="container">
-      <span class="badge"><i data-icon="truck" data-icon-size="15"></i> The Fleet Office, Built for Indian Transporters</span>
-      <h1>Fleet <span class="accent">Manager</span></h1>
-      <p>Your entire fleet office in one place — RTO compliance, diesel &amp; mileage, daily inspections, work orders, drivers and spares. <strong>Foresight</strong>, the FleetWorks AI, keeps round-the-clock watch on all of it, and <strong>Copilot</strong> answers your questions in plain language.</p>
-    </div>
-  </section>
+    <!-- ======= MAIN ======= -->
+    <div class="app-main">
+      <header class="app-top">
+        <button class="side-toggle" id="sideToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+        <h1 id="pageTitle">Foresight AI</h1>
+        <div class="app-top-actions">
+          <button class="btn btn-primary btn-sm" id="demoBtn">Load Demo Fleet</button>
+        </div>
+      </header>
+      <main class="app-content">
 
-  <main class="container dash-main">
+        <!-- Empty state -->
+        <div id="emptyState" class="empty-state" hidden>
+          <div class="empty-icon"><i data-icon="truck" data-icon-size="46"></i></div>
+          <h2>No fleet data yet</h2>
+          <p>Load the demo fleet to explore compliance, fuel, inspections, issues and the AI Copilot — or add your vehicles in the AI Dashboard first.</p>
+          <button class="btn btn-primary" onclick="loadDemoFleet()">Load Demo Fleet</button>
+        </div>
 
-    <!-- Empty state -->
-    <div id="emptyState" class="empty-state" hidden>
-      <div class="empty-icon"><i data-icon="truck" data-icon-size="46"></i></div>
-      <h2>No fleet data yet</h2>
-      <p>Load the demo fleet to explore compliance, fuel, inspections, issues and the AI Copilot — or add your vehicles in the AI Dashboard first.</p>
-      <button class="btn btn-primary" onclick="loadDemoFleet()">Load Demo Fleet</button>
-    </div>
-
-    <div id="fleetContent" hidden>
-
-      <!-- ======= TABS ======= -->
-      <div class="tab-bar" id="tabBar">
-        <button class="tab-btn active" data-tab="overview"><i data-icon="brain"></i> Foresight AI</button>
-        <button class="tab-btn" data-tab="vehicles"><i data-icon="truck"></i> Vehicles &amp; RTO</button>
-        <button class="tab-btn" data-tab="drivers"><i data-icon="driver"></i> Drivers</button>
-        <button class="tab-btn" data-tab="fuel"><i data-icon="fuel"></i> Diesel &amp; Mileage</button>
-        <button class="tab-btn" data-tab="inspections"><i data-icon="clipboardCheck"></i> Inspections</button>
-        <button class="tab-btn" data-tab="issues"><i data-icon="wrench"></i> Issues &amp; Job Cards</button>
-        <button class="tab-btn" data-tab="reminders"><i data-icon="calendarClock"></i> Maintenance</button>
-        <button class="tab-btn" data-tab="parts"><i data-icon="boxes"></i> Spares Godown</button>
-        <button class="tab-btn" data-tab="radar"><i data-icon="shieldCheck"></i> Compliance Radar</button>
-        <button class="tab-btn" data-tab="documents"><i data-icon="document"></i> Documents</button>
-        <button class="tab-btn" data-tab="tyres"><i data-icon="tire"></i> Tyre Health</button>
-        <button class="tab-btn" data-tab="settings"><i data-icon="settings"></i> Settings</button>
-      </div>
+        <div id="fleetContent" hidden>
 
       <!-- ======= OVERVIEW ======= -->
       <section class="tab-panel active" id="tab-overview">
@@ -574,38 +572,12 @@
           <p class="muted" style="margin-top:12px">Export downloads a full copy of your fleet data to your device. Clearing demo data removes the sample fleet only — your own records are kept.</p>
         </div>
       </section>
-    </div>
+        </div>
 
-    <div id="vizTooltip" class="viz-tooltip" hidden></div>
-  </main>
-
-  <!-- ======= FOOTER ======= -->
-  <footer class="footer">
-    <div class="container footer-grid">
-      <div>
-        <a href="index.html" class="logo footer-logo"><span>Fleet<em>Works</em></span></a>
-        <p><em>Where Every Fleet Learns.</em><br />India's First AI/ML-powered vehicle maintenance &amp; management system for trucks, buses and commercial fleets.</p>
-      </div>
-      <div>
-        <h4>Platform</h4>
-        <a href="index.html#services">Services</a>
-        <a href="why.html">Why FleetWorks</a>
-        <a href="dashboard.html">AI Dashboard</a>
-        <a href="fleet.html">Fleet Manager</a>        <a href="partner.html">Partner With Us</a>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <a href="tel:+919740799722">📞 +91 97407 99722</a>
-        <a href="mailto:admin@fleetworks.in">✉️ admin@fleetworks.in</a>
-      </div>
+        <div id="vizTooltip" class="viz-tooltip" hidden></div>
+      </main>
     </div>
-    <div class="footer-bottom">
-      <div class="container">
-        <span>© 2026 FleetWorks Private Limited. All rights reserved.</span>
-        <span>Terms · <a href="privacy.html" style="display:inline;color:inherit">Privacy</a></span>
-      </div>
-    </div>
-  </footer>
+  </div>
 
   <script src="js/icons.js"></script>
   <script src="js/backend.js"></script>

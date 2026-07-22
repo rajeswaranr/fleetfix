@@ -1009,20 +1009,24 @@ document.getElementById("radarFilters").addEventListener("click", e => {
   renderRadar();
 });
 
-// Tabs — use closest() so clicks landing on the button's inner SVG icon
-// still resolve to the .tab-btn that carries data-tab.
+// Sidebar nav (enterprise shell) — closest() so clicks on the inner SVG icon
+// still resolve to the .tab-btn that carries data-tab. Updates the page title
+// and closes the mobile drawer.
 document.getElementById("tabBar").addEventListener("click", e => {
   const btn = e.target.closest(".tab-btn");
   if (!btn || !btn.dataset.tab) return;
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b === btn));
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === "tab-" + btn.dataset.tab));
+  const title = document.getElementById("pageTitle");
+  if (title) title.textContent = (btn.textContent || "").trim();
+  document.getElementById("appSide")?.classList.remove("open");
 });
 
-// Navbar
-const navbar = document.getElementById("navbar");
-window.addEventListener("scroll", () => navbar.classList.toggle("scrolled", window.scrollY > 10));
-document.getElementById("hamburger").addEventListener("click", () =>
-  document.getElementById("navLinks").classList.toggle("open"));
+// Sidebar drawer toggle (mobile)
+document.getElementById("sideToggle")?.addEventListener("click", () =>
+  document.getElementById("appSide")?.classList.toggle("open"));
+document.getElementById("sideClose")?.addEventListener("click", () =>
+  document.getElementById("appSide")?.classList.remove("open"));
 
 // ---------- Orchestration ----------
 function renderAll() {
