@@ -29,15 +29,38 @@
         <button class="side-item tab-btn active" data-tab="overview"><i data-icon="gauge"></i><span>Dashboard</span></button>
         <button class="side-item tab-btn" data-tab="map"><i data-icon="mapPin"></i><span>Fleet Map</span></button>
 
+        <!-- ======= PILLAR 1: FleetOps — maintenance & daily operations ======= -->
+        <div class="side-pillar ops"><span class="pp"></span>Fleet<em>Ops</em></div>
+
         <div class="side-group has-children open">
-          <button type="button" class="side-parent"><i data-icon="truck"></i><span>Vehicles</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
+          <button type="button" class="side-parent"><i data-icon="truck"></i><span>Fleet</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
           <div class="side-children">
             <button class="side-item tab-btn" data-tab="vehicles"><span>Vehicle List &amp; RTO</span></button>
             <button class="side-item tab-btn" data-tab="assignments"><span>Assignments</span></button>
+            <button class="side-item tab-btn" data-tab="drivers"><span>Drivers &amp; Contacts</span></button>
             <button class="side-item tab-btn" data-tab="meters"><span>Meter History</span></button>
+            <button class="side-item tab-btn" data-tab="places"><span>Places</span></button>
+          </div>
+        </div>
+
+        <div class="side-group has-children open">
+          <button type="button" class="side-parent"><i data-icon="tools"></i><span>Maintenance</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
+          <div class="side-children">
+            <button class="side-item tab-btn" data-tab="workorders"><span>Work Orders</span></button>
+            <button class="side-item tab-btn" data-tab="servicehistory"><span>Service History</span></button>
+            <button class="side-item tab-btn" data-tab="servicetasks"><span>Service Tasks</span></button>
+            <button class="side-item tab-btn" data-tab="programs"><span>Service Programs</span></button>
+          </div>
+        </div>
+
+        <div class="side-group has-children open">
+          <button type="button" class="side-parent"><i data-icon="boxes"></i><span>Assets &amp; Parts</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
+          <div class="side-children">
+            <button class="side-item tab-btn" data-tab="parts"><span>Spares Godown</span></button>
+            <button class="side-item tab-btn" data-tab="purchaseorders"><span>Purchase Orders</span></button>
             <button class="side-item tab-btn" data-tab="tyres"><span>Tyre Readings</span></button>
-            <button class="side-item tab-btn" data-tab="expensehistory"><span>Expense History</span></button>
-            <button class="side-item tab-btn" data-tab="replacement"><span>Replacement Analysis</span></button>
+            <button class="side-item tab-btn" data-tab="documents"><span>Documents</span></button>
+            <button class="side-item tab-btn" data-tab="vendors"><span>Vendors</span></button>
           </div>
         </div>
 
@@ -45,7 +68,6 @@
           <button type="button" class="side-parent"><i data-icon="clipboardCheck"></i><span>Inspections</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
           <div class="side-children">
             <button class="side-item tab-btn" data-tab="inspections"><span>New &amp; History</span></button>
-            <button class="side-item tab-btn" data-tab="itemfailures"><span>Item Failures</span></button>
             <button class="side-item tab-btn" data-tab="inspschedules"><span>Schedules</span></button>
             <button class="side-item tab-btn" data-tab="forms"><span>Forms</span></button>
           </div>
@@ -61,32 +83,13 @@
         </div>
 
         <div class="side-group has-children open">
-          <button type="button" class="side-parent"><i data-icon="bell"></i><span>Reminders</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
+          <button type="button" class="side-parent"><i data-icon="bell"></i><span>Reminders &amp; Compliance</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
           <div class="side-children">
             <button class="side-item tab-btn" data-tab="reminders"><span>Service Reminders</span></button>
             <button class="side-item tab-btn" data-tab="radar" data-radar="vehicle"><span>Vehicle Renewals</span></button>
             <button class="side-item tab-btn" data-tab="radar" data-radar="driver"><span>Driver Renewals</span></button>
-          </div>
-        </div>
-
-        <div class="side-group has-children open">
-          <button type="button" class="side-parent"><i data-icon="tools"></i><span>Service</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
-          <div class="side-children">
-            <button class="side-item tab-btn" data-tab="servicehistory"><span>Service History</span></button>
-            <button class="side-item tab-btn" data-tab="workorders"><span>Work Orders</span></button>
-            <button class="side-item tab-btn" data-tab="servicetasks"><span>Service Tasks</span></button>
-            <button class="side-item tab-btn" data-tab="programs"><span>Service Programs</span></button>
-          </div>
-        </div>
-
-        <button class="side-item tab-btn" data-tab="drivers"><i data-icon="driver"></i><span>Drivers &amp; Contacts</span></button>
-        <button class="side-item tab-btn" data-tab="vendors"><i data-icon="building"></i><span>Vendors</span></button>
-
-        <div class="side-group has-children open">
-          <button type="button" class="side-parent"><i data-icon="boxes"></i><span>Parts &amp; Inventory</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
-          <div class="side-children">
-            <button class="side-item tab-btn" data-tab="parts"><span>Spares Godown</span></button>
-            <button class="side-item tab-btn" data-tab="purchaseorders"><span>Purchase Orders</span></button>
+            <button class="side-item tab-btn" data-tab="radar" data-radar="warranty"><span>Warranties</span></button>
+            <button class="side-item tab-btn" data-tab="radar" data-radar="all"><span>Compliance Radar</span></button>
           </div>
         </div>
 
@@ -98,21 +101,20 @@
           </div>
         </div>
 
-        <button class="side-item tab-btn" data-tab="places"><i data-icon="mapPin"></i><span>Places</span></button>
-        <button class="side-item tab-btn" data-tab="documents"><i data-icon="document"></i><span>Documents</span></button>
-        <button class="side-item tab-btn" data-tab="radar" data-radar="warranty"><i data-icon="shieldCheck"></i><span>Warranties</span></button>
-        <button class="side-item tab-btn" data-tab="radar" data-radar="all"><i data-icon="shieldAlert"></i><span>Compliance Radar</span></button>
-        <button class="side-item tab-btn" data-tab="integrations"><i data-icon="link"></i><span>Integrations</span></button>
+        <!-- ======= PILLAR 2: FleetFin — accounts & money only ======= -->
+        <div class="side-pillar fin"><span class="pp"></span>Fleet<em>Fin</em></div>
+        <button class="side-item tab-btn" data-tab="expensehistory"><i data-icon="receipt"></i><span>Expense History</span></button>
+        <button class="side-item tab-btn" data-tab="accounts"><i data-icon="rupee"></i><span>Accounts &amp; Tally</span></button>
+        <button class="side-item tab-btn" data-tab="reports"><i data-icon="chartBar"></i><span>Standard Reports</span></button>
 
-        <div class="side-group has-children open">
-          <button type="button" class="side-parent"><i data-icon="chartBar"></i><span>Reports</span><i data-icon="chevronDown" data-icon-size="14" class="chev"></i></button>
-          <div class="side-children">
-            <button class="side-item tab-btn" data-tab="analytics"><span>AI Analytics</span></button>
-            <button class="side-item tab-btn" data-tab="reports"><span>Standard Reports</span></button>
-          </div>
-        </div>
+        <!-- ======= PILLAR 3: FleetIQ — prediction, analytics, forecasting only ======= -->
+        <div class="side-pillar iq"><span class="pp"></span>Fleet<em>IQ</em></div>
+        <button class="side-item tab-btn" data-tab="analytics"><i data-icon="brain"></i><span>AI Analytics</span></button>
+        <button class="side-item tab-btn" data-tab="replacement"><i data-icon="trendUp"></i><span>Replacement Analysis</span></button>
+        <button class="side-item tab-btn" data-tab="itemfailures"><i data-icon="alert"></i><span>Failure Intelligence</span></button>
 
         <div class="side-sep"></div>
+        <button class="side-item tab-btn" data-tab="integrations"><i data-icon="link"></i><span>Integrations</span></button>
         <button class="side-item tab-btn" data-tab="account"><i data-icon="driver"></i><span>My Account</span></button>
         <button class="side-item tab-btn" data-tab="settings"><i data-icon="settings"></i><span>Settings</span></button>
         <a class="side-item" href="tel:+919740799722"><i data-icon="phone"></i><span>Help &amp; Support</span></a>
@@ -650,6 +652,27 @@
             <button type="button" class="btn btn-outline" id="clearDemoBtn"><i data-icon="trash" data-icon-size="16"></i> Clear Demo Data</button>
           </div>
           <p class="muted" style="margin-top:12px">Export downloads a full copy of your fleet data to your device. Clearing demo data removes the sample fleet only — your own records are kept.</p>
+        </div>
+      </section>
+
+      <!-- ======= ACCOUNTS & TALLY (FleetFin) ======= -->
+      <section class="tab-panel" id="tab-accounts">
+        <div class="chart-card">
+          <div class="chart-head">
+            <div>
+              <h2 class="head-ic"><span class="ic-tile success"><i data-icon="rupee" data-icon-size="22"></i></span> Accounts &amp; Tally</h2>
+              <p class="muted">GST-ready books from your day-to-day entries. Export payment vouchers with per-category expense ledgers straight into Tally Prime / ERP 9.</p>
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button type="button" class="btn btn-primary" onclick="exportTally()"><i data-icon="receipt" data-icon-size="16"></i> Export to Tally (GST)</button>
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('exportDataBtn')?.click()"><i data-icon="download" data-icon-size="16"></i> Export Data (JSON)</button>
+          </div>
+          <p class="disclaimer">Import in Tally via <em>Gateway of Tally → Import Data → Vouchers</em>. Ledger masters are included, so it works on a fresh company too.</p>
+        </div>
+        <div class="chart-card">
+          <div class="chart-head"><div><h2>Monthly Books</h2><p class="muted">Maintenance and diesel spend, month by month — the numbers your accountant asks for</p></div></div>
+          <div class="chart-scroll"><div id="accountsSummary"></div></div>
         </div>
       </section>
 

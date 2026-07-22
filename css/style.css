@@ -301,6 +301,12 @@ input.invalid, select.invalid { border-color: #dc2626; box-shadow: 0 0 0 3px rgb
 .hm-stat { position: absolute; right: 18px; bottom: 16px; z-index: 2; text-align: right; }
 .hm-stat b { display: block; color: var(--amber); font-weight: 800; font-size: 1.15rem; line-height: 1.1; }
 .hm-stat span { color: #93a7c4; font-size: 0.66rem; letter-spacing: 0.04em; }
+.hm-quote {
+  position: absolute; left: 18px; bottom: 16px; z-index: 2;
+  font-size: 0.78rem; font-weight: 600; font-style: italic; color: #ffd88f;
+  text-shadow: 0 0 14px rgba(245, 166, 35, 0.65), 0 0 30px rgba(245, 166, 35, 0.3);
+}
+.hm-quote em { color: #fff; font-weight: 700; }
 @keyframes hmBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 @media (prefers-reduced-motion: reduce) { .hm-live .dot { animation: none; } }
 
@@ -1102,3 +1108,16 @@ i[data-icon] { display: inline-flex; align-items: center; justify-content: cente
   justify-content: center; flex: none;
 }
 
+
+/* ---------- Sidebar product pillars (FleetOps / FleetFin / FleetIQ) ---------- */
+.side-pillar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 16px 14px 6px; margin-top: 4px;
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #8fa3c0; user-select: none;
+}
+.side-pillar .pp { width: 8px; height: 8px; border-radius: 3px; flex: none; }
+.side-pillar.ops .pp { background: #f5a623; box-shadow: 0 0 8px rgba(245, 166, 35, 0.7); }
+.side-pillar.fin .pp { background: #1baf7a; box-shadow: 0 0 8px rgba(27, 175, 122, 0.7); }
+.side-pillar.iq  .pp { background: #6ea8ff; box-shadow: 0 0 8px rgba(110, 168, 255, 0.7); }
+.side-pillar em { font-style: normal; color: #c8d6ea; }

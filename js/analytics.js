@@ -467,6 +467,21 @@ function exportTally() {
   URL.revokeObjectURL(a.href);
 }
 
+// ---------- Render: FleetFin monthly books ----------
+function renderAccounts() {
+  const el = document.getElementById("accountsSummary");
+  if (!el) return;
+  const map = {};
+  db.expenses.forEach(e => { const k = monthKey(e.date); (map[k] = map[k] || { m: 0, f: 0 }).m += e.amount; });
+  (db.fuelLogs || []).forEach(f => { const k = monthKey(f.date); (map[k] = map[k] || { m: 0, f: 0 }).f += f.amount; });
+  const keys = Object.keys(map).sort().reverse().slice(0, 12);
+  if (!keys.length) { el.innerHTML = "<p class='muted'>No entries yet — expenses and diesel fills will appear here month by month.</p>"; return; }
+  el.innerHTML =
+    `<table class="chart-table-el"><thead><tr><th>Month</th><th>Maintenance</th><th>Diesel</th><th>Total</th></tr></thead><tbody>` +
+    keys.map(k => `<tr><td><strong>${monthLabel(k)}</strong></td><td>${fmtINRfull(map[k].m)}</td><td>${fmtINRfull(map[k].f)}</td><td><strong>${fmtINRfull(map[k].m + map[k].f)}</strong></td></tr>`).join("") +
+    "</tbody></table>";
+}
+
 // ---------- Filters & orchestration ----------
 function renderCharts() { renderMonthly(); renderAnalyticsVehicles(); renderAnalyticsParts(); }
 
@@ -481,6 +496,7 @@ function renderAnalyticsAll() {
   renderStats();
   renderCharts();
   renderPredictions();
+  renderAccounts();
 }
 
 document.getElementById("vehicleFilter").addEventListener("change", renderCharts);
