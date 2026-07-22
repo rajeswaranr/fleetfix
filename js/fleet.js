@@ -1021,6 +1021,7 @@ document.getElementById("tabBar").addEventListener("click", e => {
   if (title) title.textContent = (btn.textContent || "").trim();
   document.getElementById("appSide")?.classList.remove("open");
   clearPageSearch();
+  updateToolbarCounts();
 });
 
 // ---------- Top-bar page search (filters the active panel's lists) ----------
@@ -1042,6 +1043,69 @@ document.getElementById("globalSearch")?.addEventListener("input", e => {
     el.style.display = !q || el.textContent.toLowerCase().includes(q) ? "" : "none";
   });
 });
+
+// ---------- Section list-toolbars (Fleetio-style) ----------
+// Injected once per section: live record count, a "+ Add" button that
+// reveals the section's entry form (collapsed by default), and CSV export
+// on the Compliance Radar.
+const TAB_META = {
+  vehicles:  { count: () => db.vehicles.length,   label: "vehicles",      add: "Update Compliance" },
+  drivers:   { count: () => db.drivers.length,    label: "drivers",       add: "Add Driver" },
+  fuel:      { count: () => db.fuelLogs.length,   label: "fuel entries",  add: "Log Fuel Fill" },
+  inspections: { count: () => db.inspections.length, label: "inspections" },
+  issues:    { count: () => db.issues.filter(i => i.status !== "Resolved").length, label: "open issues", add: "Report Issue" },
+  reminders: { count: () => db.reminders.length,  label: "PM schedules",  add: "Add Schedule" },
+  parts:     { count: () => db.parts.length,      label: "parts",         add: "Add / Update Part" },
+  radar:     { count: () => radarItems().length,  label: "renewals tracked" },
+  documents: { count: () => db.documents.length,  label: "documents",     add: "Add Document" },
+  tyres:     { count: () => db.tyreReadings.length, label: "readings",    add: "Log Reading" }
+};
+
+function initListToolbars() {
+  Object.entries(TAB_META).forEach(([tab, meta]) => {
+    const panel = document.getElementById("tab-" + tab);
+    if (!panel || panel.querySelector(".list-toolbar")) return;
+    const formCards = [...panel.querySelectorAll(".chart-card")].filter(c => c.querySelector("form.entry-form"));
+    const bar = document.createElement("div");
+    bar.className = "list-toolbar";
+    let html = `<span class="lt-count" data-count="${tab}">—</span><span class="lt-spacer"></span>`;
+    if (tab === "radar") html += `<button type="button" class="btn btn-outline btn-sm" id="radarExport">${FWIcon("download", { size: 15 })} Export CSV</button>`;
+    if (meta.add && formCards.length) {
+      formCards.forEach(c => c.classList.add("form-card", "collapsed"));
+      html += `<button type="button" class="btn btn-primary btn-sm lt-add">${FWIcon("plus", { size: 15 })} ${meta.add}</button>`;
+    }
+    bar.innerHTML = html;
+    panel.prepend(bar);
+    bar.querySelector(".lt-add")?.addEventListener("click", () => {
+      const opening = formCards[0].classList.contains("collapsed");
+      formCards.forEach(c => c.classList.toggle("collapsed"));
+      if (opening) formCards[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  });
+  document.getElementById("radarExport")?.addEventListener("click", exportRadarCsv);
+}
+
+function updateToolbarCounts() {
+  Object.entries(TAB_META).forEach(([tab, meta]) => {
+    const el = document.querySelector(`.lt-count[data-count="${tab}"]`);
+    if (!el) return;
+    try { el.textContent = meta.count().toLocaleString("en-IN") + " " + meta.label; }
+    catch { el.textContent = ""; }
+  });
+}
+
+function exportRadarCsv() {
+  const rows = [["Category", "Entity", "Renewal", "Valid Till", "Days Left", "Status"]];
+  radarItems().forEach(i => rows.push([
+    i.cat, i.entity, i.type, i.date, i.days,
+    i.days < 0 ? "Overdue" : i.days <= warnDays() ? "Due Soon" : "Upcoming"
+  ]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = "fleetworks-compliance-radar.csv";
+  a.click(); URL.revokeObjectURL(a.href);
+}
 
 // Sidebar drawer toggle (mobile)
 document.getElementById("sideToggle")?.addEventListener("click", () =>
@@ -1066,5 +1130,7 @@ function renderAll() {
   renderRadar(); renderDocuments(); renderTyres(); renderSettings();
   const org = document.getElementById("topOrg");
   if (org) org.textContent = (db.settings && db.settings.businessName) || "My Fleet";
+  updateToolbarCounts();
 }
+initListToolbars();
 renderAll();

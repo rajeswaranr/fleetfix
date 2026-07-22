@@ -998,3 +998,14 @@ i[data-icon] { display: inline-flex; align-items: center; justify-content: cente
 .app-content .chart-table-el tbody tr:not(.veh-history):hover td { background: #f6f9fd; }
 .app-content .chart-table-el tbody tr:last-child td { border-bottom: none; }
 
+/* ---- section list-toolbars ---- */
+.list-toolbar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 16px; margin-bottom: 16px;
+}
+.lt-count { font-size: 0.84rem; font-weight: 600; color: var(--muted); }
+.lt-spacer { flex: 1; }
+.list-toolbar .btn .fw-ic { flex: none; }
+.form-card.collapsed { display: none; }
+
