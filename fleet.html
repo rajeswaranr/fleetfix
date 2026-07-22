@@ -15,6 +15,88 @@
 </head>
 <body class="app-body">
 
+  <!-- ======= AUTH GATE (signed-out: clean login page, no app chrome) ======= -->
+  <div id="authGate" class="auth-gate" hidden>
+    <div class="auth-gate-inner">
+      <div class="auth-gate-logo">
+        <img src="assets/logo-mark.svg" width="44" height="44" alt="" />
+        <span>Fleet<em>Works</em></span>
+      </div>
+      <div class="auth-gate-grid">
+        <div class="onboard-card auth-gate-card">
+          <h2 id="authTitle">Log in to FleetWorks</h2>
+          <p class="muted" style="margin-bottom:16px">Don't have an account? <button type="button" class="link-btn" id="authToggle">Start a free trial</button></p>
+          <form id="authForm" class="entry-form">
+            <div id="signupOnlyFields" hidden>
+              <label>Your Name
+                <input type="text" name="fullName" placeholder="e.g. Rajesh Kumar" autocomplete="name" />
+              </label>
+              <label>Transport / Company Name
+                <input type="text" name="transportName" placeholder="e.g. Sri Balaji Transports" autocomplete="organization" />
+              </label>
+              <label>GST Number or PAN
+                <input type="text" name="gstPan" placeholder="e.g. 33ABCDE1234F1Z5 or ABCDE1234F" maxlength="15" style="text-transform:uppercase" autocomplete="off" />
+                <span class="field-hint">Used to verify your business. GSTIN (15 chars) or PAN (10 chars).</span>
+              </label>
+              <label>Mobile Number
+                <input type="tel" name="mobile" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric" autocomplete="tel" />
+              </label>
+              <label>Number of Vehicles in Your Fleet
+                <input type="number" name="fleetSize" placeholder="e.g. 5" min="1" max="9999" inputmode="numeric" />
+              </label>
+            </div>
+            <label>Email
+              <input type="email" name="email" placeholder="you@example.com" required autocomplete="username" />
+            </label>
+            <label>Password
+              <input type="password" name="password" placeholder="Minimum 6 characters" required autocomplete="current-password" />
+            </label>
+            <button type="submit" class="btn btn-primary btn-block" id="authSubmit">Log In</button>
+            <p class="field-error" id="authErr" hidden></p>
+            <p class="muted" id="authNote" style="font-size:0.78rem" hidden></p>
+          </form>
+
+          <!-- Email-confirmation panel (shown after Create Account) -->
+          <div id="authConfirm" class="auth-confirm" hidden>
+            <span class="auth-confirm-ic"><i data-icon="mailCheck" data-icon-size="30"></i></span>
+            <h2>Check your email to activate</h2>
+            <p>We've sent an activation link to <strong id="confirmEmail"></strong>. Click it to activate your FleetWorks account, then come back here and sign in.</p>
+            <p class="muted auth-confirm-hint">Didn't get it within a minute? Check your spam folder, or <button type="button" class="link-btn" id="resendConfirm">resend the link</button>.</p>
+            <p class="muted" id="resendNote" hidden></p>
+            <button type="button" class="btn btn-outline btn-block" id="backToSignIn">Back to Sign In</button>
+          </div>
+
+          <p class="muted auth-gate-alt">Just exploring? <button type="button" class="link-btn" id="demoModeBtn">Open the live demo &rarr;</button></p>
+          <p class="muted auth-gate-alt">Workshop partner or FleetWorks staff? <a href="signin.html">Choose your sign-in</a></p>
+        </div>
+
+        <div class="onboard-card auth-gate-news">
+          <h3>What's New</h3>
+          <div class="agn-item">
+            <span class="fw-badge ok">New</span>
+            <div><strong>Three dashboards, one login</strong>
+              <p class="muted">FleetOps for daily operations, FleetFin for GST-ready books, FleetIQ for AI forecasts &amp; predictions.</p></div>
+          </div>
+          <div class="agn-item">
+            <span class="fw-badge ok">New</span>
+            <div><strong>Foresight — AI that keeps watch</strong>
+              <p class="muted">Inflated bills, RTO lapses, DL expiries, falling mileage and repeat failures surface automatically, ranked by risk.</p></div>
+          </div>
+          <div class="agn-item">
+            <span class="fw-badge ok">New</span>
+            <div><strong>Tally export for GST filing</strong>
+              <p class="muted">One click turns your expense entries into Tally Prime payment vouchers with per-category ledgers.</p></div>
+          </div>
+          <div class="agn-item">
+            <span class="fw-badge upcoming">Soon</span>
+            <div><strong>Live GPS fleet map &amp; toll tracking</strong>
+              <p class="muted">Telematics integration brings live locations, geofences and FASTag toll books.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="app-shell">
     <!-- ======= SIDEBAR ======= -->
     <aside class="app-side" id="appSide">
@@ -771,56 +853,13 @@
       <!-- ======= MY ACCOUNT (merged from my.html) ======= -->
       <section class="tab-panel" id="tab-account">
 
-        <!-- Signed out -->
-        <div id="authView" hidden>
-          <div class="dash-hero" style="border-radius:var(--radius);padding:36px 30px;margin-bottom:24px">
-            <span class="badge"><i data-icon="truck" data-icon-size="14"></i> For Transport Owners</span>
-            <h1 style="font-size:clamp(1.5rem,3vw,2.2rem)">My <span class="accent">FleetWorks</span></h1>
-            <p>One account for your whole fleet. Add diesel, expenses and problems in seconds — FleetWorks AI turns them into savings, predictions and Tally-ready accounts. Works on phone and computer, data always backed up.</p>
-          </div>
-          <div class="onboard-card" style="max-width:440px;margin:0 auto">
-            <h2 style="color:var(--navy);font-size:1.2rem;margin-bottom:4px" id="authTitle">Owner Sign In</h2>
-            <p class="muted" style="margin-bottom:16px">Free account · takes 30 seconds</p>
-            <form id="authForm" class="entry-form">
-              <div id="signupOnlyFields" hidden>
-                <label>Your Name
-                  <input type="text" name="fullName" placeholder="e.g. Rajesh Kumar" autocomplete="name" />
-                </label>
-                <label>Transport / Company Name
-                  <input type="text" name="transportName" placeholder="e.g. Sri Balaji Transports" autocomplete="organization" />
-                </label>
-                <label>GST Number or PAN
-                  <input type="text" name="gstPan" placeholder="e.g. 33ABCDE1234F1Z5 or ABCDE1234F" maxlength="15" style="text-transform:uppercase" autocomplete="off" />
-                  <span class="field-hint">Used to verify your business. GSTIN (15 chars) or PAN (10 chars).</span>
-                </label>
-                <label>Mobile Number
-                  <input type="tel" name="mobile" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric" autocomplete="tel" />
-                </label>
-                <label>Number of Vehicles in Your Fleet
-                  <input type="number" name="fleetSize" placeholder="e.g. 5" min="1" max="9999" inputmode="numeric" />
-                </label>
-              </div>
-              <label>Email
-                <input type="email" name="email" placeholder="you@example.com" required autocomplete="username" />
-              </label>
-              <label>Password
-                <input type="password" name="password" placeholder="Minimum 6 characters" required autocomplete="current-password" />
-              </label>
-              <button type="submit" class="btn btn-primary btn-block" id="authSubmit">Sign In</button>
-              <button type="button" class="btn btn-outline btn-block" id="authToggle">New owner? Create free account</button>
-              <p class="field-error" id="authErr" hidden></p>
-              <p class="muted" id="authNote" style="font-size:0.78rem" hidden></p>
-            </form>
-
-            <!-- Email-confirmation panel (shown after Create Account) -->
-            <div id="authConfirm" class="auth-confirm" hidden>
-              <span class="auth-confirm-ic"><i data-icon="mailCheck" data-icon-size="30"></i></span>
-              <h2>Check your email to activate</h2>
-              <p>We've sent an activation link to <strong id="confirmEmail"></strong>. Click it to activate your FleetWorks account, then come back here and sign in.</p>
-              <p class="muted auth-confirm-hint">Didn't get it within a minute? Check your spam folder, or <button type="button" class="link-btn" id="resendConfirm">resend the link</button>.</p>
-              <p class="muted" id="resendNote" hidden></p>
-              <button type="button" class="btn btn-outline btn-block" id="backToSignIn">Back to Sign In</button>
-            </div>
+        <!-- Signed out (demo mode) -->
+        <div id="accountSignedOut" hidden>
+          <div class="chart-card" style="max-width:520px;margin:0 auto;text-align:center">
+            <span class="ic-tile brand" style="width:54px;height:54px;margin:18px auto 12px"><i data-icon="driver" data-icon-size="28"></i></span>
+            <h2 style="color:var(--navy)">You're exploring the demo</h2>
+            <p class="muted" style="max-width:380px;margin:8px auto 0">Sign in to create your own fleet, sync across devices and keep your books safe in the FleetWorks cloud.</p>
+            <button class="btn btn-primary" id="openGateBtn" style="margin:16px 0 20px">Sign In / Create Free Account</button>
           </div>
         </div>
 
@@ -971,10 +1010,11 @@
   <script>
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
     // Deep-link: fleet.html#analytics / #account / #fuel ... activates that tab
-    (function () {
+    window.fwActivateHashTab = function () {
       const t = location.hash.slice(1);
       if (t) document.querySelector('#tabBar .tab-btn[data-tab="' + t + '"]')?.click();
-    })();
+    };
+    fwActivateHashTab();
   </script>
 </body>
 </html>

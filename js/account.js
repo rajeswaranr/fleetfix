@@ -17,6 +17,32 @@ function ownerDisplayName() {
   return (p && p.full_name) || (user ? user.split("@")[0] : "Owner");
 }
 
+// ---------- Auth gate (Fleetio-style: signed out = clean login page, no app chrome) ----------
+function authLocked() {
+  return !(window.fwCloud && fwCloud.user()) && !sessionStorage.getItem("fwDemo");
+}
+function applyAuthGate() {
+  const locked = authLocked();
+  document.getElementById("authGate").hidden = !locked;
+  const shell = document.querySelector(".app-shell");
+  if (shell) shell.style.display = locked ? "none" : "";
+  document.body.classList.toggle("auth-locked", locked);
+}
+function openGate() {
+  sessionStorage.removeItem("fwDemo");
+  applyAuthGate();
+  window.scrollTo(0, 0);
+}
+
+document.getElementById("demoModeBtn").addEventListener("click", () => {
+  sessionStorage.setItem("fwDemo", "1");
+  applyAuthGate();
+  if (!db.vehicles.length) loadDemoFleet();
+  renderAuthState();
+  window.fwActivateHashTab?.();
+});
+document.getElementById("openGateBtn").addEventListener("click", openGate);
+
 function updateAuthPill() {
   const pill = document.getElementById("authPill");
   if (!pill) return;
@@ -26,8 +52,7 @@ function updateAuthPill() {
        <button type="button" class="btn btn-outline btn-sm btn-block" id="pillLogout">Sign Out</button>`
     : `<span class="side-plan-t">15-Day Free Trial</span>
        <button type="button" class="btn btn-primary btn-sm btn-block" id="pillSignIn">Sign In / Create Account</button>`;
-  document.getElementById("pillSignIn")?.addEventListener("click", () =>
-    document.querySelector('#tabBar .tab-btn[data-tab="account"]')?.click());
+  document.getElementById("pillSignIn")?.addEventListener("click", openGate);
   document.getElementById("pillLogout")?.addEventListener("click", doLogout);
 }
 
@@ -37,8 +62,9 @@ function doLogout() {
 
 function renderAuthState() {
   const user = window.fwCloud && fwCloud.user();
-  document.getElementById("authView").hidden = !!user;
+  applyAuthGate();
   document.getElementById("portalView").hidden = !user;
+  document.getElementById("accountSignedOut").hidden = !!user;
   if (user) {
     document.getElementById("ownerName").textContent = ownerDisplayName();
     renderAccountPortal();

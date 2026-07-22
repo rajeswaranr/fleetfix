@@ -1121,3 +1121,24 @@ i[data-icon] { display: inline-flex; align-items: center; justify-content: cente
 .side-pillar.fin .pp { background: #1baf7a; box-shadow: 0 0 8px rgba(27, 175, 122, 0.7); }
 .side-pillar.iq  .pp { background: #6ea8ff; box-shadow: 0 0 8px rgba(110, 168, 255, 0.7); }
 .side-pillar em { font-style: normal; color: #c8d6ea; }
+
+/* ---------- Auth gate (Fleetio-style standalone login page) ---------- */
+.auth-gate { position: fixed; inset: 0; z-index: 400; overflow-y: auto; background: #f4f6f9; }
+.auth-gate-inner { max-width: 1020px; margin: 0 auto; padding: 48px 20px 60px; }
+.auth-gate-logo {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 30px; font-size: 1.65rem; font-weight: 800; color: var(--navy);
+}
+.auth-gate-logo em { color: var(--amber); font-style: normal; }
+.auth-gate-grid { display: grid; grid-template-columns: 430px 1fr; gap: 26px; align-items: start; }
+.auth-gate-card h2 { color: var(--navy); margin-bottom: 4px; }
+.auth-gate-alt { font-size: 0.82rem; margin-top: 14px; text-align: center; }
+.auth-gate-alt a { color: var(--amber-dark); font-weight: 600; }
+.auth-gate-news h3 { color: var(--navy); margin-bottom: 6px; }
+.agn-item { display: flex; gap: 12px; align-items: flex-start; padding: 13px 0; border-top: 1px solid #eceff3; }
+.agn-item:first-of-type { border-top: 0; }
+.agn-item .fw-badge { flex: none; margin-top: 2px; }
+.agn-item strong { color: var(--navy); font-size: 0.92rem; }
+.agn-item p { font-size: 0.82rem; margin-top: 2px; }
+body.auth-locked #cpWrap, body.auth-locked #fwSyncPill { display: none !important; }
+@media (max-width: 860px) { .auth-gate-grid { grid-template-columns: 1fr; } }
