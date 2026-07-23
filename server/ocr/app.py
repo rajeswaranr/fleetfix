@@ -46,9 +46,20 @@ async def do_ocr(file: UploadFile = File(...)):
     amounts = [float(m.replace(",", "")) for m in AMT_RE.findall(text)]
     amounts = [a for a in amounts if 100 <= a <= 2_000_000]
 
+    # line items: "description .... amount" rows
+    item_re = re.compile(r"^(.{4,60}?)[\s.:]{2,}(?:rs\.?|₹)?\s*(\d[\d,]{1,8}(?:\.\d{1,2})?)$", re.I)
+    items = []
+    for ln in lines:
+        m = item_re.match(ln.strip())
+        if m:
+            amt = float(m.group(2).replace(",", ""))
+            if 10 <= amt <= 2_000_000:
+                items.append({"desc": m.group(1).strip(" .:-"), "amount": amt})
+
     return {
         "text": text,
         "lines": lines,
+        "items": items[:15],
         "gstin": gstin.group(0).upper() if gstin else None,
         "date": date.group(0) if date else None,
         "amount": max(amounts) if amounts else None,

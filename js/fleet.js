@@ -1606,7 +1606,8 @@ function buildDynamicPanels() {
         <label>Vendor GSTIN (blank = non-GST bill)<input type="text" name="gstin" maxlength="15" style="text-transform:uppercase" /></label>
         <label>Bill No (optional)<input type="text" name="billNo" /></label>
       </div>
-      <button type="submit" class="btn btn-primary"><i data-icon="check" data-icon-size="16"></i> Save Bill as Expense</button>
+      <div id="billItems"></div>
+      <button type="submit" class="btn btn-primary"><i data-icon="check" data-icon-size="16"></i> Confirm &amp; Save Bill</button>
     </form>
     <p class="disclaimer">First scan downloads the free on-device reader (~15 MB, one time). Bill photos never leave your phone — OCR runs entirely in your browser.</p>
   </div>

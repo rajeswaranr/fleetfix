@@ -691,6 +691,19 @@ function initBillScan() {
         .map(m => +m[1].replace(/,/g, "")).filter(n => n >= 100 && n <= 2000000);
       if (server && server.amount) form.amount.value = Math.round(server.amount);
       else if (nums.length) form.amount.value = Math.round(Math.max(...nums));
+      // itemised review: user confirms/unticks each read line before saving
+      const box = document.getElementById("billItems");
+      if (box) {
+        const items = (server && server.items) || [];
+        box.innerHTML = items.length ?
+          `<p class="muted" style="margin:8px 0 4px"><strong>Items read from the bill — untick anything wrong:</strong></p>` +
+          items.map(it => `<label class="drv-check-row"><input type="checkbox" class="bi-chk" data-amt="${it.amount}" checked /><span style="flex:1">${esc(it.desc)}</span><strong>₹${Math.round(it.amount).toLocaleString("en-IN")}</strong></label>`).join("") : "";
+        box.onchange = () => {
+          const t = [...box.querySelectorAll(".bi-chk:checked")].reduce((s, c) => s + +c.dataset.amt, 0);
+          if (t) form.amount.value = Math.round(t);
+        };
+        box.onchange();
+      }
       const dm = text.match(/\b(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\b/);
       if (dm) {
         const yy = dm[3].length === 2 ? "20" + dm[3] : dm[3];
@@ -710,11 +723,15 @@ function initBillScan() {
   form.addEventListener("submit", e => {
     e.preventDefault();
     const fd = Object.fromEntries(new FormData(e.target));
+    const confirmed = [...document.querySelectorAll("#billItems .bi-chk:checked")]
+      .map(c => ({ desc: c.parentElement.querySelector("span").textContent, amount: +c.dataset.amt }));
     db.expenses.push({
       vehicleId: fd.vehicleId, date: fd.date, category: fd.category, amount: +fd.amount,
       gstin: (fd.gstin || "").trim().toUpperCase() || undefined,
-      billNo: (fd.billNo || "").trim() || undefined
+      billNo: (fd.billNo || "").trim() || undefined,
+      items: confirmed.length ? confirmed : undefined
     });
+    const bx = document.getElementById("billItems"); if (bx) bx.innerHTML = "";
     saveStore(); e.target.reset(); e.target.hidden = true;
     st.textContent = "Saved ✓ — it's in your books, Tally export and ITC tracker.";
     renderAll();
