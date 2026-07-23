@@ -1,13 +1,80 @@
 -- ============ FleetWorks — Integrated Service Workflow (production schema) ============
--- Run in Supabase SQL Editor. Idempotent. NO jsonb blobs — fully relational.
--- Depends on db/schema-normalized.sql (organizations, memberships, vehicles,
--- is_org_member()). Files (photos/reports/invoices) go to Supabase Storage;
--- tables hold only storage paths.
+-- Run in Supabase SQL Editor. Idempotent, SELF-CONTAINED — safe to run in any
+-- order relative to db/schema-normalized.sql (shared tables use identical
+-- definitions guarded by "if not exists"). NO jsonb blobs — fully relational.
+-- Files (photos/reports/invoices) go to Supabase Storage; tables hold paths.
 --
 -- Lifecycle (service_requests.stage):
 -- raised → assigned → accepted → reached → assessed → approved →
 -- in_progress → completed → invoiced → paid → reported → closed
 -- Every transition is audit-logged in status_events by trigger.
+
+-- ---------- Prerequisites (identical subset of schema-normalized.sql) ----------
+create table if not exists public.organizations (
+  id               uuid primary key default gen_random_uuid(),
+  name             text not null default 'My Fleet',
+  gstin            text,
+  city             text,
+  warn_days        int not null default 30,
+  min_tread_mm     numeric not null default 1.6,
+  mileage_drop_pct numeric,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
+create table if not exists public.memberships (
+  id        uuid primary key default gen_random_uuid(),
+  org_id    uuid not null references public.organizations(id) on delete cascade,
+  user_id   uuid not null references auth.users(id) on delete cascade,
+  role      text not null default 'owner' check (role in ('owner','manager','viewer')),
+  created_at timestamptz not null default now(),
+  unique (org_id, user_id)
+);
+create index if not exists idx_memberships_user on public.memberships(user_id);
+create index if not exists idx_memberships_org  on public.memberships(org_id);
+
+create or replace function public.is_org_member(p_org uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+    coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false)
+    or exists (
+      select 1 from memberships m
+      where m.org_id = p_org and m.user_id = auth.uid()
+    );
+$$;
+
+create table if not exists public.vehicles (
+  id             uuid primary key default gen_random_uuid(),
+  org_id         uuid not null references public.organizations(id) on delete cascade,
+  ext_id         text,
+  name           text not null,
+  type           text,
+  km_per_month   numeric,
+  insurance_till date,
+  puc_till       date,
+  fitness_till   date,
+  permit_till    date,
+  roadtax_till   date,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  unique (org_id, ext_id)
+);
+create index if not exists idx_vehicles_org on public.vehicles(org_id);
+
+alter table public.organizations enable row level security;
+alter table public.memberships enable row level security;
+alter table public.vehicles enable row level security;
+drop policy if exists "org_read" on public.organizations;
+create policy "org_read" on public.organizations for select to authenticated using (public.is_org_member(id));
+drop policy if exists "membership_read" on public.memberships;
+create policy "membership_read" on public.memberships for select to authenticated using (user_id = auth.uid() or public.is_org_member(org_id));
+drop policy if exists "vehicles_rw" on public.vehicles;
+create policy "vehicles_rw" on public.vehicles for all to authenticated using (public.is_org_member(org_id));
 
 -- ---------- Enums ----------
 do $$ begin
