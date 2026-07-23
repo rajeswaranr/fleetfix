@@ -625,11 +625,26 @@ function renderGST() {
     <div class="stat-tile"><span class="stat-label">Non-GST spend</span><span class="stat-value" style="color:${nonGstSpend ? DASH_PAL.serious : DASH_PAL.good}">${fmtINR(nonGstSpend)}</span><span class="stat-sub">≈${fmtINR(nonGstSpend * 0.18 / 1.18)} credit lost — ask for GST bills</span></div>`;
   const rows = [...db.expenses].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 40);
   tbl.innerHTML = rows.length ?
-    `<table class="chart-table-el"><thead><tr><th>Date</th><th>Vehicle</th><th>Category</th><th>Amount</th><th>GST</th><th>ITC</th></tr></thead><tbody>` +
+    `<table class="chart-table-el"><thead><tr><th>Date</th><th>Vehicle</th><th>Category</th><th>Amount</th><th>GST</th><th>ITC</th><th>Bill</th></tr></thead><tbody>` +
     rows.map(e => `<tr><td>${fmtDate(e.date)}</td><td><strong>${esc(vName(e.vehicleId))}</strong></td><td>${esc(e.category)}</td><td>${fmtINRfull(e.amount)}</td>
       <td>${e.gstin ? `<span class="fw-badge ok">${esc(e.gstin)}</span>` : '<span class="fw-badge soon">No GST bill</span>'}</td>
-      <td>${e.gstin ? fmtINRfull(itcOf(e)) : "—"}</td></tr>`).join("") + "</tbody></table>"
+      <td>${e.gstin ? fmtINRfull(itcOf(e)) : "—"}</td>
+      <td>${(e.billPath || e.billThumb) ? `<button class="link-btn" onclick="fwViewBill(${db.expenses.indexOf(e)})">View</button>` : "—"}</td></tr>`).join("") + "</tbody></table>"
     : "<p class='muted'>No bills yet — scan or enter your first bill above.</p>";
+}
+
+// Open the stored bill: cloud original (signed URL) if present, else the thumbnail
+window.fwViewBill = async function (i) {
+  const e = db.expenses[i];
+  if (!e) return;
+  if (e.billPath && window.fwCloud && fwCloud.user() && fwCloud.signUrl) {
+    const u = await fwCloud.signUrl("bills", e.billPath, 3600).catch(() => null);
+    if (u) { window.open(u, "_blank"); return; }
+  }
+  if (e.billThumb) {
+    const w = window.open("about:blank");
+    if (w) w.document.write('<title>Bill</title><img style="max-width:100%" src="' + e.billThumb + '" />');
+  } else alert("Original stored in cloud — sign in to view it.");
 }
 
 // ---------- OCR bill capture (Tesseract.js, loaded on demand) ----------
@@ -646,11 +661,13 @@ function loadTesseract() {
   return tessLoading;
 }
 function initBillScan() {
-  const btn = document.getElementById("billScanBtn"), file = document.getElementById("billFile");
+  const camBtn = document.getElementById("billCamBtn"), upBtn = document.getElementById("billUploadBtn");
+  const cam = document.getElementById("billCam"), file = document.getElementById("billFile");
   const form = document.getElementById("billForm"), st = document.getElementById("billScanStatus");
-  if (!btn || btn.dataset.bound) return;
-  btn.dataset.bound = "1";
-  btn.addEventListener("click", () => file.click());
+  if (!camBtn || camBtn.dataset.bound) return;
+  camBtn.dataset.bound = "1";
+  camBtn.addEventListener("click", () => cam.click());   // opens the phone camera directly
+  upBtn.addEventListener("click", () => file.click());   // gallery / file picker
   document.getElementById("billManualBtn").addEventListener("click", () => {
     form.hidden = false;
     if (!form.date.value) form.date.value = new Date().toISOString().slice(0, 10);
@@ -727,9 +744,18 @@ function initBillScan() {
     return { text: data.text || "", server: null };
   }
 
-  file.addEventListener("change", async () => {
-    const f = file.files[0];
+  let lastBillFile = null;
+  async function onBillPick(e) {
+    const f = e.target.files[0];
+    e.target.value = "";
     if (!f) return;
+    lastBillFile = f;
+    if (f.type === "application/pdf") {
+      form.hidden = false;
+      if (!form.date.value) form.date.value = new Date().toISOString().slice(0, 10);
+      st.textContent = "PDF attached — enter the details and save; the PDF is stored with the bill.";
+      return;
+    }
     try {
       const { text, server } = await ocrText(f);
       form.hidden = false;
@@ -767,19 +793,40 @@ function initBillScan() {
       if (!form.date.value) form.date.value = new Date().toISOString().slice(0, 10);
       st.textContent = (ex && ex.message) || "Couldn't read that photo — enter the bill below.";
     }
-    file.value = "";
-  });
+  }
+  cam.addEventListener("change", onBillPick);
+  file.addEventListener("change", onBillPick);
   form.addEventListener("submit", e => {
     e.preventDefault();
     const fd = Object.fromEntries(new FormData(e.target));
     const confirmed = [...document.querySelectorAll("#billItems .bi-chk:checked")]
       .map(c => ({ desc: c.parentElement.querySelector("span").textContent, amount: +c.dataset.amt }));
-    db.expenses.push({
+    const exp = {
       vehicleId: fd.vehicleId, date: fd.date, category: fd.category, amount: +fd.amount,
       gstin: (fd.gstin || "").trim().toUpperCase() || undefined,
       billNo: (fd.billNo || "").trim() || undefined,
       items: confirmed.length ? confirmed : undefined
-    });
+    };
+    db.expenses.push(exp);
+    // store the bill itself: on-device thumbnail + original to Supabase Storage
+    const bill = lastBillFile; lastBillFile = null;
+    if (bill && bill.type.indexOf("image/") === 0) {
+      const img = new Image();
+      img.onload = () => {
+        const s = Math.min(1, 480 / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(img.src);
+        exp.billThumb = c.toDataURL("image/jpeg", 0.6);
+        saveStore(); renderGST();
+      };
+      img.src = URL.createObjectURL(bill);
+    }
+    if (bill && window.fwCloud && fwCloud.user() && fwCloud.uploadFile) {
+      const path = fwCloud.uid() + "/" + Date.now() + (bill.type === "application/pdf" ? ".pdf" : ".jpg");
+      fwCloud.uploadFile("bills", path, bill).then(ok => { if (ok) { exp.billPath = path; saveStore(); renderGST(); } });
+    }
     const bx = document.getElementById("billItems"); if (bx) bx.innerHTML = "";
     saveStore(); e.target.reset(); e.target.hidden = true;
     st.textContent = "Saved ✓ — it's in your books, Tally export and ITC tracker.";

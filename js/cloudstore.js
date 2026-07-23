@@ -118,6 +118,26 @@
       return r.ok;
     },
 
+    /* Supabase Storage: upload a bill photo/PDF into the private "bills"
+       bucket (path must start with the user's uid — enforced by RLS). */
+    async uploadFile(bucket, path, file) {
+      const r = await authFetch("/storage/v1/object/" + bucket + "/" + path, {
+        method: "POST",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file
+      });
+      return r.ok;
+    },
+    async signUrl(bucket, path, expiresIn) {
+      const r = await authFetch("/storage/v1/object/sign/" + bucket + "/" + path, {
+        method: "POST",
+        body: JSON.stringify({ expiresIn: expiresIn || 3600 })
+      });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return j.signedURL ? cfg().url + "/storage/v1" + j.signedURL : null;
+    },
+
     /* Authenticated insert that returns the created row(s) — used by the
        service workflow to capture server-generated uuids. */
     async authInsertRet(table, row) {

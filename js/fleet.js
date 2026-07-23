@@ -1581,9 +1581,11 @@ function buildDynamicPanels() {
   mk("gstbills", `<div class="chart-card">
     <div class="chart-head"><div><h2 class="head-ic"><span class="ic-tile success"><i data-icon="receipt" data-icon-size="22"></i></span> Bill Capture &amp; GST</h2><p class="muted">Snap the workshop bill — FleetWorks reads the amount, date and GSTIN on your phone, and tracks your input-tax credit</p></div></div>
     <div class="settings-actions">
-      <button type="button" class="btn btn-primary" id="billScanBtn"><i data-icon="receipt" data-icon-size="16"></i> Scan a Bill (photo)</button>
+      <button type="button" class="btn btn-primary" id="billCamBtn"><i data-icon="receipt" data-icon-size="16"></i> Scan with Camera</button>
+      <button type="button" class="btn btn-primary" id="billUploadBtn"><i data-icon="download" data-icon-size="16"></i> Upload Bill File</button>
       <button type="button" class="btn btn-outline" id="billManualBtn">Enter Manually</button>
-      <input type="file" id="billFile" accept="image/*" hidden />
+      <input type="file" id="billCam" accept="image/*" capture="environment" hidden />
+      <input type="file" id="billFile" accept="image/*,application/pdf" hidden />
       <span class="muted" id="billScanStatus"></span>
     </div>
     <form id="billForm" class="entry-form" hidden>
